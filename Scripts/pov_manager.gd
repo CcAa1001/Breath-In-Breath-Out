@@ -14,5 +14,6 @@ func switch_to(pov: String) -> void:
 	_update_label()
 
 func _update_label() -> void:
-	var label = get_node("/root/Main/UI/LocationLabel")
-	label.text = "[ " + ("Front Seat" if current_pov == "front" else "Back Seat") + " ]"
+	var label = get_node_or_null("/root/Main/UI/LocationLabel")
+	if label:
+		label.text = "[ " + ("Front Seat" if current_pov == "front" else "Back Seat") + " ]"
