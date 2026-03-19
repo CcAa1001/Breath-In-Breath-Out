@@ -1,0 +1,159 @@
+[gd_scene format=3 uid="uid://d0gbeavntjhei"]
+
+[ext_resource type="Script" uid="uid://b1d68u0kuds0n" path="res://main.gd" id="1_1bvp3"]
+[ext_resource type="Script" uid="uid://dwtixrxqv2mbt" path="res://clickable_item.gd" id="2_7mycd"]
+[ext_resource type="Script" uid="uid://hbwhbjqtbuiq" path="res://soil_overlay.gd" id="2_lquwl"]
+[ext_resource type="Script" uid="uid://clec7nsjceuyg" path="res://oxygen_bar.gd" id="3_7mycd"]
+[ext_resource type="Script" uid="uid://bqlsoxhxig1yv" path="res://game_over.gd" id="4_272bh"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1bvp3"]
+size = Vector2(160, 80)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lquwl"]
+size = Vector2(120, 200)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7mycd"]
+size = Vector2(200, 60)
+
+[node name="Main" type="Node2D" unique_id=1450602400]
+script = ExtResource("1_1bvp3")
+
+[node name="Background" type="ColorRect" parent="." unique_id=711402799]
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.101960786, 0.0627451, 0.03137255, 1)
+
+[node name="CarInterior" type="Node2D" parent="." unique_id=597133552]
+
+[node name="WindowFrame" type="ColorRect" parent="CarInterior" unique_id=1144644273]
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.050980393, 0.039215688, 0.019607844, 1)
+
+[node name="ColorRect" type="ColorRect" parent="CarInterior/WindowFrame" unique_id=423769594]
+layout_mode = 0
+offset_left = 226.0
+offset_top = 100.0
+offset_right = 926.0
+offset_bottom = 420.0
+color = Color(0.101960786, 0.16470589, 0.101960786, 1)
+
+[node name="GloveBox" type="Area2D" parent="CarInterior" unique_id=1384895634]
+script = ExtResource("2_7mycd")
+
+[node name="GloveBox" type="CollisionShape2D" parent="CarInterior/GloveBox" unique_id=345865200]
+position = Vector2(800, 350)
+shape = SubResource("RectangleShape2D_1bvp3")
+
+[node name="ColorRect" type="ColorRect" parent="CarInterior/GloveBox/GloveBox" unique_id=815640592]
+offset_left = -80.0
+offset_top = -40.0
+offset_right = 80.0
+offset_bottom = 40.0
+color = Color(0.2901961, 0.22745098, 0.101960786, 1)
+
+[node name="Label" type="Label" parent="CarInterior/GloveBox" unique_id=1093626940]
+offset_left = 44.0
+offset_top = 3.0
+offset_right = 283.0
+offset_bottom = 69.0
+text = "Glove Box"
+
+[node name="CarDoor" type="Area2D" parent="CarInterior" unique_id=640707083]
+script = ExtResource("2_7mycd")
+
+[node name="CarDoor" type="CollisionShape2D" parent="CarInterior/CarDoor" unique_id=421747511]
+position = Vector2(81, 409)
+shape = SubResource("RectangleShape2D_lquwl")
+
+[node name="ColorRect2" type="ColorRect" parent="CarInterior/CarDoor/CarDoor" unique_id=741124723]
+offset_left = -61.0
+offset_top = -99.0
+offset_right = 60.0
+offset_bottom = 100.0
+color = Color(0.2901961, 0.22745098, 0.101960786, 1)
+
+[node name="Label" type="Label" parent="CarInterior/CarDoor" unique_id=92171172]
+offset_left = 45.0
+offset_top = 3.0
+offset_right = 114.0
+offset_bottom = 52.0
+text = "Car Door
+"
+
+[node name="Trunk" type="Area2D" parent="CarInterior" unique_id=1004273010]
+position = Vector2(576, 550)
+script = ExtResource("2_7mycd")
+
+[node name="Trunk" type="CollisionShape2D" parent="CarInterior/Trunk" unique_id=8481153]
+shape = SubResource("RectangleShape2D_7mycd")
+
+[node name="ColorRect3" type="ColorRect" parent="CarInterior/Trunk/Trunk" unique_id=814568785]
+offset_left = -103.0
+offset_top = -29.0
+offset_right = 100.0
+offset_bottom = 31.0
+color = Color(0.2901961, 0.22745098, 0.101960786, 1)
+
+[node name="Label" type="Label" parent="CarInterior/Trunk" unique_id=1300484820]
+offset_left = -47.0
+offset_top = -13.0
+offset_right = 68.0
+offset_bottom = 10.0
+text = "Trunk (Locked)"
+
+[node name="SoilOverlay" type="Node2D" parent="." unique_id=1976311048]
+script = ExtResource("2_lquwl")
+
+[node name="TopSoil" type="ColorRect" parent="SoilOverlay" unique_id=887299137]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="LeftSoil" type="ColorRect" parent="SoilOverlay" unique_id=845897522]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="RightSoil" type="ColorRect" parent="SoilOverlay" unique_id=1282410682]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=171038985]
+
+[node name="OxygenBar" type="ProgressBar" parent="." unique_id=294812219]
+offset_left = 132.0
+offset_top = 575.0
+offset_right = 1023.0
+offset_bottom = 602.0
+value = 100.0
+script = ExtResource("3_7mycd")
+
+[node name="OxygenLabel" type="Label" parent="." unique_id=868907781]
+offset_left = 145.0
+offset_top = 578.0
+offset_right = 211.0
+offset_bottom = 601.0
+text = "OXYGEN"
+
+[node name="InventoryLabel" type="Label" parent="." unique_id=1426445610]
+offset_left = 135.0
+offset_top = 613.0
+offset_right = 1023.0
+offset_bottom = 636.0
+text = "Inventory: empty"
+
+[node name="GameOverScreen" type="CanvasLayer" parent="." unique_id=2097113647]
+script = ExtResource("4_272bh")
+
+[node name="Overlay" type="ColorRect" parent="GameOverScreen" unique_id=945187642]
+offset_left = 1.0
+offset_right = 1153.0
+offset_bottom = 648.0
+tooltip_text = "Game Over"
+color = Color(0, 0, 0, 0)
+
+[node name="ReasonLabel" type="Label" parent="GameOverScreen" unique_id=1856768241]
+offset_left = 375.0
+offset_top = 204.0
+offset_right = 415.0
+offset_bottom = 227.0
+text = "Game Over"
