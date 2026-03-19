@@ -1,7 +1,7 @@
 extends Node2D
 
-var screen_w: float = 1152.0
-var screen_h: float = 648.0
+var screen_w: float = 1920.0
+var screen_h: float = 1080.0
 var max_intrusion: float = 250.0
 var soil_color: Color = Color(0.25, 0.15, 0.05)
 
