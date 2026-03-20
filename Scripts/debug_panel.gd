@@ -39,22 +39,30 @@ func _add_slider(lbl_text: String, prop: String, mn: float, mx: float, y: int) -
 	var val_lbl = Label.new()
 	val_lbl.position = Vector2(255, y)
 	val_lbl.add_theme_font_size_override("font_size", 11)
-	val_lbl.text = str(snapped(GameManager.get(prop), 0.1))
+
+	# safely get the value — convert to float before snapping
+	var current_val = GameManager.get(prop)
+	if current_val == null:
+		print("WARNING: Property not found on GameManager: ", prop)
+		val_lbl.text = "?"
+	else:
+		val_lbl.text = "%.1f" % float(current_val)
+
 	panel.add_child(val_lbl)
 
 	var slider = HSlider.new()
 	slider.min_value = mn
 	slider.max_value = mx
-	slider.value = GameManager.get(prop)
-	slider.step = 0.1
-	slider.position = Vector2(10, y + 16)
-	slider.size = Vector2(300, 20)
+	slider.value     = float(current_val) if current_val != null else mn
+	slider.step      = 0.1
+	slider.position  = Vector2(10, y + 16)
+	slider.size      = Vector2(300, 20)
 	slider.value_changed.connect(func(v: float):
 		GameManager.set(prop, v)
-		val_lbl.text = str(snapped(v, 0.1)))
+		val_lbl.text = "%.1f" % v)
 	panel.add_child(slider)
 	return y + 48
-
+	
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_M:

@@ -32,10 +32,12 @@ func _process(delta: float) -> void:
 		if GameManager.has_item("phone"):
 			var turning_on = not GameManager.flashlight_active
 			GameManager.set_flashlight(turning_on)
-			if darkness: darkness.toggle_light()
+			# FIX: only toggle visual if state actually changed
+			if darkness and GameManager.flashlight_active == turning_on:
+				darkness.toggle_light()
 		else:
 			GameManager.show_dialogue("I need to find my phone first.")
-
+			
 	# Space = hold to breathe
 	if Input.is_action_pressed("breathe"):
 		GameManager.hold_space(delta)
