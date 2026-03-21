@@ -1,0 +1,1165 @@
+[gd_scene format=3 uid="uid://d0gbeavntjhei"]
+
+[ext_resource type="Script" uid="uid://b1d68u0kuds0n" path="res://Scripts/main.gd" id="1_344ge"]
+[ext_resource type="Script" uid="uid://dhvt62dbtqlq5" path="res://Scripts/atmosphere.gd" id="2_d1ilt"]
+[ext_resource type="Script" uid="uid://hbwhbjqtbuiq" path="res://Scripts/soil_overlay.gd" id="2_ynf5e"]
+[ext_resource type="Texture2D" uid="uid://c3ndtq5k50k7r" path="res://assets/frontseat.png" id="3_ee4r6"]
+[ext_resource type="Script" uid="uid://bqlsoxhxig1yv" path="res://Scripts/game_over.gd" id="4_d1ilt"]
+[ext_resource type="Script" uid="uid://by2u3a0rxydt4" path="res://Scripts/pov_manager.gd" id="5_6iyac"]
+[ext_resource type="Texture2D" uid="uid://cg07xv24k44e2" path="res://assets/phone.png" id="5_ynf5e"]
+[ext_resource type="Texture2D" uid="uid://iks8ntowetk3" path="res://assets/cutter.png" id="6_gt3je"]
+[ext_resource type="Texture2D" uid="uid://b20pkkfhqbruf" path="res://assets/back_seat.png" id="6_pdsj5"]
+[ext_resource type="Shader" uid="uid://cwgrfcbeuilfv" path="res://assets/flashlight.gdshader" id="6_ynf5e"]
+[ext_resource type="Texture2D" uid="uid://bwcqftouiycy1" path="res://assets/shovel.png" id="7_ee4r6"]
+[ext_resource type="Script" uid="uid://d01acypp83h81" path="res://Scripts/darkness_overlay.gd" id="7_jkdf5"]
+[ext_resource type="Texture2D" uid="uid://wjf48wd0ugk7" path="res://assets/Back1.png" id="8_gt3je"]
+[ext_resource type="Script" uid="uid://ijaee5dhtk8v" path="res://Scripts/car_jack_visual.gd" id="8_kltya"]
+[ext_resource type="Script" uid="uid://dwtixrxqv2mbt" path="res://Scripts/clickable_item.gd" id="8_wsu2k"]
+[ext_resource type="Texture2D" uid="uid://jcgjswc0nq8x" path="res://assets/Back2.png" id="9_3pmx8"]
+[ext_resource type="Texture2D" uid="uid://wgehm7d5hn5e" path="res://assets/duct_tape.png" id="9_7k868"]
+[ext_resource type="Script" uid="uid://bkwhqwxb0k5ey" path="res://Scripts/oxygen_ui.gd" id="9_d1ilt"]
+[ext_resource type="Texture2D" uid="uid://ddvlsff7fdepa" path="res://assets/glove_box_open.png" id="10_u50mg"]
+[ext_resource type="Texture2D" uid="uid://bjxsw4h2sa6jg" path="res://assets/trunk.png" id="11_cbgmd"]
+[ext_resource type="Texture2D" uid="uid://bckyy0cj8w8qs" path="res://assets/battery_3.png" id="11_wsu2k"]
+[ext_resource type="Texture2D" uid="uid://hhr6a0g3gid3" path="res://assets/emergency_number.png" id="12_aqgau"]
+[ext_resource type="Texture2D" uid="uid://ytfn3jpxsmx7" path="res://assets/screwdriver.png" id="12_hpc6h"]
+[ext_resource type="Script" uid="uid://cy12fpdi557fe" path="res://Scripts/battery_icon.gd" id="12_k12tt"]
+[ext_resource type="Script" uid="uid://cmefjywo8a6uk" path="res://Scripts/phone_ui.gd" id="13_jkdf5"]
+[ext_resource type="Texture2D" uid="uid://cbv02aio4faoi" path="res://assets/hammer.png" id="13_kltya"]
+[ext_resource type="Script" uid="uid://c1i573akv5fu" path="res://Scripts/debug_panel.gd" id="14_jkdf5"]
+[ext_resource type="Texture2D" uid="uid://cdjotvmrjfe8c" path="res://assets/carjack.png" id="15_e08e2"]
+[ext_resource type="Script" uid="uid://b6f1xxyi1m7u4" path="res://Scripts/inventory_ui.gd" id="23_gt3je"]
+[ext_resource type="Script" uid="uid://bjdivprl5dwt0" path="res://Scripts/notification.gd" id="24_3pmx8"]
+[ext_resource type="Texture2D" uid="uid://cw55ov2g0ye1p" path="res://assets/blackout.png" id="25_jwpg7"]
+[ext_resource type="Script" uid="uid://dcsh0uwbitmw1" path="res://Scripts/audio_manager.gd" id="25_u50mg"]
+[ext_resource type="Script" uid="uid://b3nlc00jpwfiw" path="res://Scripts/glass_overlay.gd" id="26_cbgmd"]
+[ext_resource type="Texture2D" uid="uid://df5036twchc0q" path="res://assets/PhoneBg.png" id="26_hpc6h"]
+[ext_resource type="Script" uid="uid://c0l6bd2d3ycns" path="res://Scenes/dial_screen.gd" id="29_8cuat"]
+[ext_resource type="Texture2D" uid="uid://b830e7fd4mxrd" path="res://assets/phone_ui.png" id="30_o1aky"]
+[ext_resource type="Script" uid="uid://cpado7kjuyloa" path="res://Scripts/emergency_call.gd" id="31_e08e2"]
+[ext_resource type="Texture2D" uid="uid://e4jmx4b43mla" path="res://assets/bar_bg.png" id="32_r33sp"]
+[ext_resource type="Texture2D" uid="uid://ms468wobw7bh" path="res://assets/bar_fill.png" id="33_hdf80"]
+[ext_resource type="Texture2D" uid="uid://cccrryk5nc7s4" path="res://assets/car_bar_fill.png" id="34_hdf80"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ynf5e"]
+size = Vector2(83.18201, 135)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3pmx8"]
+size = Vector2(43.907303, 186.2602)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hdf80"]
+size = Vector2(889.6275, 84.145676)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_272bh"]
+size = Vector2(356, 116)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kek77"]
+size = Vector2(285, 733)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u50mg"]
+size = Vector2(46.447388, 127.0282)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_gt3je"]
+radius = 120.33703
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3pmx8"]
+radius = 43.011627
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cbgmd"]
+size = Vector2(494, 161.75)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_neg2b"]
+size = Vector2(484, 124)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r33sp"]
+size = Vector2(173, 101)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jwpg7"]
+size = Vector2(381.00812, 211)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_k2e45"]
+size = Vector2(341.6582, 315.08432)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5vw27"]
+size = Vector2(170, 264)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4c57u"]
+size = Vector2(97, 154)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_efxa6"]
+size = Vector2(224, 60)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kwxat"]
+size = Vector2(1197, 176)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_aa8k8"]
+size = Vector2(310, 296.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kqrg6"]
+size = Vector2(296.5, 345)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6vcvc"]
+size = Vector2(184, 203)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_536cc"]
+size = Vector2(173, 204)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7k868"]
+size = Vector2(185.45882, 391.51526)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_aqgau"]
+size = Vector2(206.99426, 35.217285)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8cuat"]
+size = Vector2(171.33124, 124.7382)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o1aky"]
+size = Vector2(344.6629, 257.7613)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ueoa1"]
+size = Vector2(122.5, 197.05087)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kltya"]
+size = Vector2(198.09375, 200.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e08e2"]
+size = Vector2(256.75, 87.25)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hpc6h"]
+size = Vector2(138.375, 194.5)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_344ge"]
+shader = ExtResource("6_ynf5e")
+shader_parameter/light_pos = Vector2(0.5, 0.5)
+shader_parameter/notif_inner = 0.03
+shader_parameter/notif_outer = 0.06
+shader_parameter/notif_on = false
+shader_parameter/flash_inner = 0.06
+shader_parameter/flash_outer = 0.1
+shader_parameter/flash_glow = 0.16
+shader_parameter/flash_on = false
+
+[node name="Main" type="Node2D" unique_id=1450602400]
+script = ExtResource("1_344ge")
+
+[node name="Background" type="ColorRect" parent="." unique_id=711402799]
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+color = Color(0.101960786, 0.0627451, 0.03137255, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="POVManager" type="Node2D" parent="." unique_id=1614618310]
+script = ExtResource("5_6iyac")
+
+[node name="FrontRow" type="Node2D" parent="POVManager" unique_id=651537742]
+
+[node name="CarImage" type="Sprite2D" parent="POVManager/FrontRow" unique_id=1203633041]
+position = Vector2(958, 540)
+scale = Vector2(0.99791664, 1)
+texture = ExtResource("3_ee4r6")
+
+[node name="Phone" type="Area2D" parent="POVManager/FrontRow" unique_id=289164244]
+script = ExtResource("8_wsu2k")
+item_name = "phone"
+description = ""
+dialogue = "My phone! Press F for flashlight, P for messages."
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/Phone" unique_id=1636748878]
+position = Vector2(1308.4784, 919.80505)
+rotation = 0.12740904
+scale = Vector2(0.99999994, 0.99999994)
+shape = SubResource("RectangleShape2D_ynf5e")
+
+[node name="Sprite2D" type="Sprite2D" parent="POVManager/FrontRow/Phone" unique_id=320399379]
+position = Vector2(1297.751, 894.32153)
+rotation = -0.064577185
+scale = Vector2(0.1267099, 0.12433741)
+texture = ExtResource("5_ynf5e")
+
+[node name="Cutter" type="Area2D" parent="POVManager/FrontRow" unique_id=152463304]
+script = ExtResource("8_wsu2k")
+item_name = "cutter"
+description = "Can be use to cut the seatbealh which is jammed"
+dialogue = "Cutter! Maybe I can free myself."
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/Cutter" unique_id=678492121]
+position = Vector2(338.27054, 981.99445)
+rotation = 0.50963616
+shape = SubResource("RectangleShape2D_3pmx8")
+
+[node name="Sprite2D" type="Sprite2D" parent="POVManager/FrontRow/Cutter" unique_id=2119536672]
+position = Vector2(332, 978)
+rotation = 1.0210177
+scale = Vector2(0.09873252, 0.09873252)
+texture = ExtResource("6_gt3je")
+
+[node name="Seatbelt" type="Area2D" parent="POVManager/FrontRow" unique_id=1883644071]
+script = ExtResource("8_wsu2k")
+item_name = "seatbelt"
+dialogue = "I'm strapped in tight. The Seatbelt wont budge. I need something to cut it."
+collectible = false
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/Seatbelt" unique_id=1364260240]
+position = Vector2(320.00003, 757)
+rotation = 0.7853982
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_hdf80")
+
+[node name="GloveBox" type="Area2D" parent="POVManager/FrontRow" unique_id=136395845]
+script = ExtResource("8_wsu2k")
+item_name = "glove_box"
+dialogue = "It's locked. I need a tool."
+collectible = false
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/GloveBox" unique_id=848183566]
+position = Vector2(1333, 631)
+shape = SubResource("RectangleShape2D_272bh")
+
+[node name="LeftDoor" type="Area2D" parent="POVManager/FrontRow" unique_id=454895465]
+script = ExtResource("8_wsu2k")
+item_name = "door"
+description = "It won't budge. Something is jamming it from outside."
+dialogue = "It won't move. The soil is pressing against it."
+collectible = false
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/LeftDoor" unique_id=1804453308]
+position = Vector2(144.5, 708.5)
+shape = SubResource("RectangleShape2D_kek77")
+
+[node name="CarJackSlot" type="Sprite2D" parent="POVManager/FrontRow/LeftDoor" unique_id=1552681257]
+position = Vector2(129.00015, 849.00006)
+rotation = -0.017453292
+scale = Vector2(0.20734596, 0.20734596)
+texture = ExtResource("15_e08e2")
+script = ExtResource("8_kltya")
+
+[node name="JackSlotBar" type="ProgressBar" parent="POVManager/FrontRow/LeftDoor/CarJackSlot" unique_id=272742442]
+offset_left = 743.5984
+offset_top = -1039.8335
+offset_right = 1012.7942
+offset_bottom = 424.36523
+rotation = 1.579523
+max_value = 1.0
+
+[node name="RightDoor" type="Area2D" parent="POVManager/FrontRow" unique_id=1572219866]
+script = ExtResource("8_wsu2k")
+item_name = "door"
+description = "It won't budge. Something is jamming it from outside."
+dialogue = "It won't move. The soil is pressing against it."
+collectible = false
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/RightDoor" unique_id=1278351323]
+position = Vector2(1602.5442, 777.0345)
+rotation = -0.62831855
+shape = SubResource("RectangleShape2D_u50mg")
+
+[node name="SteeringWheel" type="Area2D" parent="POVManager/FrontRow" unique_id=1685833636]
+script = ExtResource("8_wsu2k")
+item_name = "steering_wheel"
+dialogue = "Completely jammed. The car isn't going anywhere."
+collectible = false
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/SteeringWheel" unique_id=485265057]
+position = Vector2(644, 575)
+shape = SubResource("CircleShape2D_gt3je")
+
+[node name="Honk" type="Area2D" parent="POVManager/FrontRow" unique_id=1526195094]
+script = ExtResource("8_wsu2k")
+item_name = "honk"
+dialogue = "*HONK* — No one can hear me this deep underground..."
+collectible = false
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/Honk" unique_id=1535645380]
+z_index = 1
+position = Vector2(641, 579)
+shape = SubResource("CircleShape2D_3pmx8")
+
+[node name="FrontWindow" type="Area2D" parent="POVManager/FrontRow" unique_id=1567195051]
+script = ExtResource("8_wsu2k")
+item_name = "front_window"
+dialogue = "The windshield looks intact... for now."
+collectible = false
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/FrontWindow" unique_id=2134278308]
+position = Vector2(1295, 432)
+shape = SubResource("RectangleShape2D_cbgmd")
+
+[node name="Shape2" type="CollisionShape2D" parent="POVManager/FrontRow/FrontWindow" unique_id=962503764]
+position = Vector2(630, 413)
+shape = SubResource("RectangleShape2D_neg2b")
+
+[node name="Shape3" type="CollisionShape2D" parent="POVManager/FrontRow/FrontWindow" unique_id=379038146]
+position = Vector2(961, 416)
+shape = SubResource("RectangleShape2D_r33sp")
+
+[node name="LeftWindow" type="Area2D" parent="POVManager/FrontRow" unique_id=1264228213]
+script = ExtResource("8_wsu2k")
+item_name = "front_window"
+dialogue = "The windshield looks intact... for now."
+collectible = false
+
+[node name="Shape3" type="CollisionShape2D" parent="POVManager/FrontRow/LeftWindow" unique_id=1666601093]
+position = Vector2(118.48871, 529.853)
+rotation = 2.6145031
+scale = Vector2(0.99999994, 0.99999994)
+shape = SubResource("RectangleShape2D_jwpg7")
+
+[node name="RightWindow" type="Area2D" parent="POVManager/FrontRow" unique_id=1340705313]
+script = ExtResource("8_wsu2k")
+item_name = "front_window"
+dialogue = "The windshield looks intact... for now."
+collectible = false
+
+[node name="Shape3" type="CollisionShape2D" parent="POVManager/FrontRow/RightWindow" unique_id=900512070]
+position = Vector2(1830.7566, 476.9154)
+rotation = 0.44680429
+shape = SubResource("RectangleShape2D_k2e45")
+
+[node name="CenterConsole" type="Area2D" parent="POVManager/FrontRow" unique_id=1920185010]
+script = ExtResource("8_wsu2k")
+item_name = "center_console"
+description = "Some buttons and a USB port."
+dialogue = "The center console."
+collectible = false
+use_choice = true
+choice_prompt = "The center console. What do you check?"
+choice_options = Array[String](["Check the radio", "Search for anything useful", "Never mind"])
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/CenterConsole" unique_id=923499495]
+position = Vector2(978, 700)
+shape = SubResource("RectangleShape2D_5vw27")
+
+[node name="BackSeatAccess" type="Area2D" parent="POVManager/FrontRow" unique_id=388748199]
+script = ExtResource("8_wsu2k")
+item_name = "back_access"
+dialogue = "Climb to the back seat."
+collectible = false
+pov_target = "back"
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/BackSeatAccess" unique_id=1841225075]
+position = Vector2(981, 921)
+shape = SubResource("RectangleShape2D_4c57u")
+
+[node name="Sprite2D" type="Sprite2D" parent="POVManager/FrontRow/BackSeatAccess" unique_id=2136217407]
+position = Vector2(979, 918.00006)
+scale = Vector2(0.0775757, 0.0775757)
+texture = ExtResource("8_gt3je")
+
+[node name="RearviewMirror" type="Area2D" parent="POVManager/FrontRow" unique_id=1274272076]
+script = ExtResource("8_wsu2k")
+item_name = "rearview_mirror"
+dialogue = "Just darkness outside. We're buried deep."
+collectible = false
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/RearviewMirror" unique_id=109430242]
+position = Vector2(992, 332)
+shape = SubResource("RectangleShape2D_efxa6")
+
+[node name="GlassZone_front" type="Area2D" parent="POVManager/FrontRow" unique_id=530189364 groups=["glass_zone"]]
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/GlassZone_front" unique_id=801480873]
+position = Vector2(980.5, 440)
+shape = SubResource("RectangleShape2D_kwxat")
+
+[node name="GlassZone_left" type="Area2D" parent="POVManager/FrontRow" unique_id=691119061 groups=["glass_zone"]]
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/GlassZone_left" unique_id=302525090]
+position = Vector2(155, 555.75)
+shape = SubResource("RectangleShape2D_aa8k8")
+
+[node name="GlassZone_right" type="Area2D" parent="POVManager/FrontRow" unique_id=1915896316 groups=["glass_zone"]]
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/GlassZone_right" unique_id=363873997]
+position = Vector2(1776.75, 521.5)
+shape = SubResource("RectangleShape2D_kqrg6")
+
+[node name="GloveBoxView" type="Node2D" parent="POVManager" unique_id=1451266864]
+visible = false
+
+[node name="CarImage" type="Sprite2D" parent="POVManager/GloveBoxView" unique_id=376675137]
+position = Vector2(959.5, 538.5)
+scale = Vector2(0.9994792, 0.9990741)
+texture = ExtResource("10_u50mg")
+
+[node name="DuctTape" type="Area2D" parent="POVManager/GloveBoxView" unique_id=968789788]
+script = ExtResource("8_wsu2k")
+item_name = "duct_tape"
+description = "duct_tape"
+dialogue = "Duct tape! I can seal the cracked windows with this."
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/GloveBoxView/DuctTape" unique_id=2109651441]
+position = Vector2(734, 677)
+shape = SubResource("RectangleShape2D_6vcvc")
+
+[node name="Sprite2D" type="Sprite2D" parent="POVManager/GloveBoxView/DuctTape" unique_id=1401189080]
+position = Vector2(741, 707)
+scale = Vector2(0.3601074, 0.3601074)
+texture = ExtResource("9_7k868")
+
+[node name="EmergencyNumber" type="Area2D" parent="POVManager/GloveBoxView" unique_id=1734677611]
+script = ExtResource("8_wsu2k")
+item_name = "emergency_number"
+description = "emergency_number"
+dialogue = "Ah, 112 I just remember i can call the cops with this number."
+collectible = false
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/GloveBoxView/EmergencyNumber" unique_id=211908491]
+position = Vector2(1040.5, 556)
+shape = SubResource("RectangleShape2D_536cc")
+
+[node name="Sprite2D" type="Sprite2D" parent="POVManager/GloveBoxView/EmergencyNumber" unique_id=74767443]
+position = Vector2(1044.6406, 562.3594)
+scale = Vector2(0.16050722, 0.16050722)
+texture = ExtResource("12_aqgau")
+
+[node name="BackBtn" type="Area2D" parent="POVManager/GloveBoxView" unique_id=106487381]
+script = ExtResource("8_wsu2k")
+item_name = ""
+dialogue = "Go back to front seat."
+collectible = false
+pov_target = "front"
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/GloveBoxView/BackBtn" unique_id=197833523]
+position = Vector2(211.28976, 881.611)
+rotation = 0.8290314
+shape = SubResource("RectangleShape2D_7k868")
+
+[node name="Sprite2D" type="Sprite2D" parent="POVManager/GloveBoxView/BackBtn" unique_id=206447531]
+position = Vector2(213, 884)
+rotation = 1.0855948
+scale = Vector2(0.19921876, 0.19921876)
+texture = ExtResource("9_3pmx8")
+
+[node name="BackRow" type="Node2D" parent="POVManager" unique_id=1933254938]
+visible = false
+
+[node name="CarImage" type="Sprite2D" parent="POVManager/BackRow" unique_id=52371136]
+position = Vector2(960, 539)
+scale = Vector2(0.9979167, 0.99444443)
+texture = ExtResource("6_pdsj5")
+
+[node name="Screwdriver" type="Area2D" parent="POVManager/BackRow" unique_id=1569667128]
+script = ExtResource("8_wsu2k")
+item_name = "screwdriver"
+description = "screwdriver"
+dialogue = "A screwdriver. I can use this on the glove box."
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/BackRow/Screwdriver" unique_id=2058517105]
+position = Vector2(1404.4929, 828.7222)
+rotation = -0.24958208
+shape = SubResource("RectangleShape2D_aqgau")
+
+[node name="Sprite2D" type="Sprite2D" parent="POVManager/BackRow/Screwdriver" unique_id=1009645458]
+position = Vector2(1392, 839.99994)
+rotation = 1.4032447
+scale = Vector2(0.21020018, 0.21599615)
+texture = ExtResource("12_hpc6h")
+
+[node name="Hammer" type="Area2D" parent="POVManager/BackRow" unique_id=1623638891]
+script = ExtResource("8_wsu2k")
+item_name = "hammer"
+description = "hammer"
+dialogue = "A hammer. I could use this to make noise... or break something."
+use_choice = true
+choice_prompt = "I found a hammer. What do I do with it?"
+choice_options = Array[String](["Bang on the car for rescue", "Keep it for now"])
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/BackRow/Hammer" unique_id=654214922]
+position = Vector2(714.5, 729.49994)
+rotation = -2.9146998
+shape = SubResource("RectangleShape2D_8cuat")
+
+[node name="Sprite2D" type="Sprite2D" parent="POVManager/BackRow/Hammer" unique_id=164395663]
+position = Vector2(729.42554, 684.7846)
+rotation = 2.4870942
+scale = Vector2(0.21469264, 0.22372866)
+texture = ExtResource("13_kltya")
+
+[node name="RearWindow" type="Area2D" parent="POVManager/BackRow" unique_id=2103753457]
+script = ExtResource("8_wsu2k")
+item_name = "rear_window"
+description = "rear_window"
+dialogue = "The rear window looks intact... for now."
+collectible = false
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/BackRow/RearWindow" unique_id=191069900]
+position = Vector2(512.1907, 183.20964)
+rotation = 2.9408798
+shape = SubResource("RectangleShape2D_o1aky")
+
+[node name="FrontBtn" type="Area2D" parent="POVManager/BackRow" unique_id=2085324737]
+script = ExtResource("8_wsu2k")
+item_name = ""
+dialogue = "Go Back to front seat"
+collectible = false
+pov_target = "front"
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/BackRow/FrontBtn" unique_id=177773040]
+position = Vector2(286.00003, 962.00006)
+rotation = 1.0210177
+shape = SubResource("RectangleShape2D_ueoa1")
+
+[node name="Sprite2D" type="Sprite2D" parent="POVManager/BackRow/FrontBtn" unique_id=127448378]
+position = Vector2(286.99997, 965)
+rotation = 1.0576695
+scale = Vector2(0.08698556, 0.10059499)
+texture = ExtResource("8_gt3je")
+
+[node name="TrunkBtn" type="Area2D" parent="POVManager/BackRow" unique_id=799963964]
+script = ExtResource("8_wsu2k")
+item_name = "Trunk"
+dialogue = "Check the trunk"
+collectible = false
+pov_target = "trunk"
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/BackRow/TrunkBtn" unique_id=1795719253]
+position = Vector2(1333, 210)
+rotation = 0.7661995
+shape = SubResource("RectangleShape2D_ueoa1")
+
+[node name="Sprite2D" type="Sprite2D" parent="POVManager/BackRow/TrunkBtn" unique_id=617132043]
+position = Vector2(1331.0001, 204.00008)
+rotation = -2.3143065
+scale = Vector2(0.09523194, 0.09523194)
+texture = ExtResource("9_3pmx8")
+flip_h = true
+
+[node name="TrunkView" type="Node2D" parent="POVManager" unique_id=1755685951]
+visible = false
+
+[node name="CarImage" type="Sprite2D" parent="POVManager/TrunkView" unique_id=1678833951]
+position = Vector2(961, 537.5)
+scale = Vector2(0.9989584, 0.99351853)
+texture = ExtResource("11_cbgmd")
+
+[node name="CarJack" type="Area2D" parent="POVManager/TrunkView" unique_id=1757548629]
+script = ExtResource("8_wsu2k")
+item_name = "car_jack"
+dialogue = "A car jack! Hold E near the door to use it."
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/TrunkView/CarJack" unique_id=1496800419]
+position = Vector2(797.9531, 678.25)
+shape = SubResource("RectangleShape2D_kltya")
+
+[node name="Sprite2D" type="Sprite2D" parent="POVManager/TrunkView/CarJack" unique_id=47106453]
+position = Vector2(798, 677)
+scale = Vector2(0.13181275, 0.13067119)
+texture = ExtResource("15_e08e2")
+
+[node name="Shovel" type="Area2D" parent="POVManager/TrunkView" unique_id=1949452399]
+script = ExtResource("8_wsu2k")
+item_name = "shovel"
+dialogue = "A folding shovel. This is my way out!"
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/TrunkView/Shovel" unique_id=1390133946]
+position = Vector2(1157.625, 722.625)
+shape = SubResource("RectangleShape2D_e08e2")
+
+[node name="Sprite2D" type="Sprite2D" parent="POVManager/TrunkView/Shovel" unique_id=916050845]
+position = Vector2(1159.5519, 708.47394)
+rotation = 1.0838494
+scale = Vector2(0.13453525, 0.13453525)
+texture = ExtResource("7_ee4r6")
+
+[node name="BackBtn" type="Area2D" parent="POVManager/TrunkView" unique_id=912939163]
+script = ExtResource("8_wsu2k")
+dialogue = "Go back to back seat."
+collectible = false
+pov_target = "back"
+
+[node name="Shape" type="CollisionShape2D" parent="POVManager/TrunkView/BackBtn" unique_id=614227579]
+position = Vector2(281.25, 951.25)
+shape = SubResource("RectangleShape2D_hpc6h")
+
+[node name="Sprite2D" type="Sprite2D" parent="POVManager/TrunkView/BackBtn" unique_id=1905645151]
+position = Vector2(275.87497, 959.125)
+scale = Vector2(0.0977783, 0.0977783)
+texture = ExtResource("8_gt3je")
+
+[node name="Atmosphere" type="Node2D" parent="." unique_id=347867963]
+visible = false
+script = ExtResource("2_d1ilt")
+
+[node name="SoilOverlay" type="Node2D" parent="." unique_id=1976311048]
+script = ExtResource("2_ynf5e")
+
+[node name="TopSoil" type="ColorRect" parent="SoilOverlay" unique_id=887299137]
+offset_right = 1960.0
+mouse_filter = 2
+color = Color(0.23921569, 0.1254902, 0.03137255, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="LeftSoil" type="ColorRect" parent="SoilOverlay" unique_id=845897522]
+offset_bottom = 1000.0
+mouse_filter = 2
+color = Color(0.23921569, 0.1254902, 0.03137255, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="RightSoil" type="ColorRect" parent="SoilOverlay" unique_id=1282410682]
+offset_left = 1920.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="DarknessOverlay" type="ColorRect" parent="." unique_id=827319452]
+visible = false
+material = SubResource("ShaderMaterial_344ge")
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+script = ExtResource("7_jkdf5")
+metadata/_edit_use_anchors_ = true
+
+[node name="GameCamera" type="Camera2D" parent="." unique_id=1217221047]
+position = Vector2(965, 535)
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=171038985]
+script = ExtResource("9_d1ilt")
+
+[node name="BatteryIcon" type="TextureRect" parent="UI" unique_id=333010172]
+offset_left = 1618.0
+offset_top = 30.0
+offset_right = 1890.0
+offset_bottom = 194.0
+texture = ExtResource("11_wsu2k")
+expand_mode = 2
+stretch_mode = 5
+script = ExtResource("12_k12tt")
+metadata/_edit_use_anchors_ = true
+
+[node name="BreathHoldBar" type="ProgressBar" parent="UI" unique_id=118127521]
+offset_right = 4.0
+offset_bottom = 27.0
+metadata/_edit_use_anchors_ = true
+
+[node name="BreathPrompt" type="Label" parent="UI" unique_id=863115159]
+offset_left = 618.0
+offset_top = 934.0
+offset_right = 1343.0
+offset_bottom = 1077.0
+theme_override_font_sizes/font_size = 70
+text = "[ SPACE — BREATHE ]"
+metadata/_edit_use_anchors_ = true
+
+[node name="DialogueLabel" type="Label" parent="UI" unique_id=27201987]
+offset_left = 200.0
+offset_top = 900.0
+offset_right = 1720.0
+offset_bottom = 980.0
+theme_override_font_sizes/font_size = 36
+
+[node name="HeartbeatOverlay" type="ColorRect" parent="UI" unique_id=455105188]
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+color = Color(1, 0, 0, 0)
+metadata/_edit_use_anchors_ = true
+
+[node name="BlackoutOverlay" type="ColorRect" parent="UI" unique_id=1886099143]
+modulate = Color(1, 1, 1, 0)
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="UI/BlackoutOverlay" unique_id=792516161]
+position = Vector2(160, 134)
+scale = Vector2(0.042968754, 0.041015632)
+texture = ExtResource("25_jwpg7")
+
+[node name="PhoneScreen" type="Panel" parent="UI" unique_id=1075265791]
+offset_left = 660.0
+offset_top = 60.0
+offset_right = 1260.0
+offset_bottom = 960.0
+script = ExtResource("13_jkdf5")
+
+[node name="PhoneBG" type="TextureRect" parent="UI/PhoneScreen" unique_id=78528434]
+layout_mode = 0
+offset_left = 41.0
+offset_right = 547.0
+offset_bottom = 900.0
+texture = ExtResource("26_hpc6h")
+expand_mode = 1
+
+[node name="BatteryBar" type="TextureRect" parent="UI/PhoneScreen" unique_id=737574187]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TimeLabel" type="Label" parent="UI/PhoneScreen" unique_id=117594547]
+layout_mode = 0
+offset_left = 230.0
+offset_top = 80.0
+offset_right = 270.0
+offset_bottom = 103.0
+theme_override_font_sizes/font_size = 28
+text = "04:13"
+
+[node name="HomeScreen" type="Control" parent="UI/PhoneScreen" unique_id=619209721]
+anchors_preset = 0
+offset_right = 597.0
+offset_bottom = 893.0
+mouse_filter = 1
+
+[node name="NotifContainer" type="VBoxContainer" parent="UI/PhoneScreen/HomeScreen" unique_id=1669386417]
+layout_mode = 0
+offset_right = 602.0
+offset_bottom = 904.0
+
+[node name="AppGrid" type="GridContainer" parent="UI/PhoneScreen/HomeScreen" unique_id=587937195]
+layout_mode = 0
+offset_left = 69.0
+offset_top = 187.0
+offset_right = 509.0
+offset_bottom = 347.0
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 3
+
+[node name="NewsBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/AppGrid" unique_id=737676099]
+custom_minimum_size = Vector2(140, 120)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "📰
+News"
+
+[node name="MessageBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/AppGrid" unique_id=701832416]
+custom_minimum_size = Vector2(140, 120)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "💬
+Message"
+
+[node name="CallBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/AppGrid" unique_id=1375805010]
+custom_minimum_size = Vector2(140, 120)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "📞
+Call"
+
+[node name="NewsScreen" type="Control" parent="UI/PhoneScreen/HomeScreen" unique_id=822508411]
+anchors_preset = 0
+offset_left = 60.0
+offset_top = 150.0
+offset_right = 526.0
+offset_bottom = 732.0
+mouse_filter = 1
+
+[node name="BackBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/NewsScreen" unique_id=22825916]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 608.0
+offset_right = 72.0
+offset_bottom = 662.0
+
+[node name="ArticleList" type="VBoxContainer" parent="UI/PhoneScreen/HomeScreen/NewsScreen" unique_id=326829316]
+layout_mode = 0
+offset_left = -2.0
+offset_top = 4.0
+offset_right = 466.0
+offset_bottom = 550.0
+
+[node name="MessageScreen" type="Control" parent="UI/PhoneScreen/HomeScreen" unique_id=320119688]
+anchors_preset = 0
+offset_left = 60.0
+offset_top = 138.0
+offset_right = 536.0
+offset_bottom = 718.0
+mouse_filter = 1
+
+[node name="BackBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/MessageScreen" unique_id=1569693907]
+layout_mode = 0
+offset_left = 84.0
+offset_top = 602.0
+offset_right = 170.0
+offset_bottom = 680.0
+
+[node name="MessageList" type="VBoxContainer" parent="UI/PhoneScreen/HomeScreen/MessageScreen" unique_id=618802043]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 32.0
+offset_right = 459.0
+offset_bottom = 538.0
+
+[node name="CallScreen" type="Control" parent="UI/PhoneScreen/HomeScreen" unique_id=1965950651]
+anchors_preset = 0
+offset_left = 56.0
+offset_top = 145.0
+offset_right = 528.0
+offset_bottom = 740.0
+mouse_filter = 1
+script = ExtResource("29_8cuat")
+
+[node name="PhoneBackground" type="TextureRect" parent="UI/PhoneScreen/HomeScreen/CallScreen" unique_id=1630121952]
+layout_mode = 0
+offset_left = -415.0
+offset_top = -310.0
+offset_right = 1633.0
+offset_bottom = 1738.0
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("30_o1aky")
+
+[node name="DialDisplay" type="Label" parent="UI/PhoneScreen/HomeScreen/CallScreen" unique_id=1384518]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="NumberGrid" type="GridContainer" parent="UI/PhoneScreen/HomeScreen/CallScreen" unique_id=1856220505]
+visible = false
+layout_mode = 0
+offset_left = 95.0
+offset_top = 179.0
+offset_right = 446.0
+offset_bottom = 591.0
+columns = 3
+
+[node name="Btn1" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen/NumberGrid" unique_id=1720914205]
+custom_minimum_size = Vector2(90, 90)
+layout_mode = 2
+
+[node name="Btn2" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen/NumberGrid" unique_id=719423985]
+custom_minimum_size = Vector2(90, 90)
+layout_mode = 2
+
+[node name="Btn3" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen/NumberGrid" unique_id=994540616]
+custom_minimum_size = Vector2(90, 90)
+layout_mode = 2
+
+[node name="Btn4" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen/NumberGrid" unique_id=425041888]
+custom_minimum_size = Vector2(90, 90)
+layout_mode = 2
+
+[node name="Btn5" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen/NumberGrid" unique_id=623925182]
+custom_minimum_size = Vector2(90, 90)
+layout_mode = 2
+
+[node name="Btn6" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen/NumberGrid" unique_id=264087247]
+custom_minimum_size = Vector2(90, 90)
+layout_mode = 2
+
+[node name="Btn7" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen/NumberGrid" unique_id=74272743]
+custom_minimum_size = Vector2(90, 90)
+layout_mode = 2
+
+[node name="Btn8" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen/NumberGrid" unique_id=1514966638]
+custom_minimum_size = Vector2(90, 90)
+layout_mode = 2
+
+[node name="Btn9" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen/NumberGrid" unique_id=1800300813]
+custom_minimum_size = Vector2(90, 90)
+layout_mode = 2
+
+[node name="BtnStar" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen/NumberGrid" unique_id=1122830237]
+custom_minimum_size = Vector2(90, 90)
+layout_mode = 2
+
+[node name="Btn0" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen/NumberGrid" unique_id=740695919]
+custom_minimum_size = Vector2(90, 90)
+layout_mode = 2
+
+[node name="BtnHash" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen/NumberGrid" unique_id=121352023]
+custom_minimum_size = Vector2(90, 90)
+layout_mode = 2
+
+[node name="CallBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen" unique_id=850511970]
+layout_mode = 0
+offset_left = 203.0
+offset_top = 573.0
+offset_right = 293.0
+offset_bottom = 663.0
+
+[node name="DeleteBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen" unique_id=925197056]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="StatusLabel" type="Label" parent="UI/PhoneScreen/HomeScreen/CallScreen" unique_id=1639526457]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="BackBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen" unique_id=881701899]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="CloseBtn" type="Button" parent="UI/PhoneScreen" unique_id=425261284]
+layout_mode = 0
+offset_left = 425.0
+offset_top = 762.0
+offset_right = 499.0
+offset_bottom = 816.0
+theme_override_font_sizes/font_size = 33
+text = "<"
+
+[node name="HomeBtn" type="Button" parent="UI/PhoneScreen" unique_id=1954400402]
+layout_mode = 0
+offset_left = 271.0
+offset_top = 756.0
+offset_right = 345.0
+offset_bottom = 810.0
+theme_override_font_sizes/font_size = 33
+text = "⌂"
+
+[node name="ChoicePanel" type="Panel" parent="UI" unique_id=1781148109]
+offset_left = 711.0
+offset_top = 273.0
+offset_right = 1199.0
+offset_bottom = 767.0
+
+[node name="ChoiceLabel" type="Label" parent="UI/ChoicePanel" unique_id=901536071]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="GameOverScreen" type="CanvasLayer" parent="UI" unique_id=2097113647]
+visible = false
+script = ExtResource("4_d1ilt")
+
+[node name="Overlay" type="ColorRect" parent="UI/GameOverScreen" unique_id=945187642]
+offset_left = 3.0
+offset_right = 1923.0
+offset_bottom = 1080.0
+tooltip_text = "Game Over"
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="ReasonLabel" type="Label" parent="UI/GameOverScreen" unique_id=743875563]
+offset_left = 524.0
+offset_top = 390.0
+offset_right = 887.0
+offset_bottom = 486.0
+theme_override_font_sizes/font_size = 62
+text = "Game Over"
+metadata/_edit_use_anchors_ = true
+
+[node name="PanicBar" type="ProgressBar" parent="UI" unique_id=475789337]
+offset_left = 21.0
+offset_top = 218.0
+offset_right = 336.0
+offset_bottom = 249.0
+show_percentage = false
+metadata/_edit_use_anchors_ = true
+
+[node name="PanicLabel" type="Label" parent="UI" unique_id=419536144]
+offset_left = 31.0
+offset_top = 220.0
+offset_right = 312.0
+offset_bottom = 253.0
+text = "Panic"
+metadata/_edit_use_anchors_ = true
+
+[node name="DebugPanel" type="CanvasLayer" parent="UI" unique_id=244713850]
+script = ExtResource("14_jkdf5")
+
+[node name="Panel" type="Panel" parent="UI/DebugPanel" unique_id=922005911]
+offset_left = 18.0
+offset_top = 43.0
+offset_right = 414.0
+offset_bottom = 547.0
+
+[node name="InventoryPanel" type="Control" parent="UI" unique_id=143623042]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 1800.0
+offset_top = 614.0
+offset_right = 1900.0
+offset_bottom = 1064.0
+script = ExtResource("23_gt3je")
+
+[node name="Slot1" type="Panel" parent="UI/InventoryPanel" unique_id=1489345435]
+layout_mode = 0
+offset_left = 5.0
+offset_right = 95.0
+offset_bottom = 130.0
+
+[node name="Slot1Icon" type="TextureRect" parent="UI/InventoryPanel/Slot1" unique_id=56172427]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 85.0
+offset_bottom = 85.0
+
+[node name="Slot1Label" type="Label" parent="UI/InventoryPanel/Slot1" unique_id=658670476]
+layout_mode = 0
+offset_top = 88.0
+offset_right = 90.0
+offset_bottom = 123.0
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="UI/InventoryPanel/Slot1" unique_id=47794244]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+accessibility_name = "KeyHint"
+theme_override_colors/font_color = Color(0.87321645, 0.7509755, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "[1]"
+
+[node name="Slot2" type="Panel" parent="UI/InventoryPanel" unique_id=1023307490]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 140.0
+offset_right = 95.0
+offset_bottom = 270.0
+
+[node name="Slot2Icon" type="TextureRect" parent="UI/InventoryPanel/Slot2" unique_id=1409534762]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 85.0
+offset_bottom = 85.0
+
+[node name="Slot2Label" type="Label" parent="UI/InventoryPanel/Slot2" unique_id=1877340071]
+layout_mode = 0
+offset_top = 88.0
+offset_right = 90.0
+offset_bottom = 123.0
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="UI/InventoryPanel/Slot2" unique_id=1788370535]
+layout_mode = 0
+offset_top = -140.0
+offset_right = 40.0
+offset_bottom = -117.0
+accessibility_name = "KeyHint"
+theme_override_colors/font_color = Color(0.87321645, 0.7509755, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "[2]"
+
+[node name="PhoneSlot" type="Panel" parent="UI/InventoryPanel" unique_id=681407277]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 310.0
+offset_right = 95.0
+offset_bottom = 440.0
+
+[node name="PhoneIcon" type="TextureRect" parent="UI/InventoryPanel/PhoneSlot" unique_id=1001981225]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 85.0
+offset_bottom = 85.0
+
+[node name="PhoneLabel" type="Label" parent="UI/InventoryPanel/PhoneSlot" unique_id=535570138]
+layout_mode = 0
+offset_top = 88.0
+offset_right = 90.0
+offset_bottom = 123.0
+text = "PHONE"
+horizontal_alignment = 1
+
+[node name="NotificationLabel" type="Label" parent="UI" unique_id=613490981]
+offset_left = 80.0
+offset_top = 977.0
+offset_right = 1802.0
+offset_bottom = 1051.0
+script = ExtResource("24_3pmx8")
+
+[node name="JackProgressBar" type="ProgressBar" parent="UI" unique_id=1732894052]
+offset_left = 23.0
+offset_top = 251.0
+offset_right = 337.0
+offset_bottom = 285.0
+max_value = 1.0
+
+[node name="BlackoutCountdown" type="Label" parent="UI" unique_id=2077808318]
+offset_left = 101.0
+offset_top = 169.0
+offset_right = 237.0
+offset_bottom = 220.0
+theme_override_colors/font_color = Color(0.7570462, 0, 0.118458636, 1)
+theme_override_font_sizes/font_size = 36
+horizontal_alignment = 1
+
+[node name="EmergencyCallScreen" type="Panel" parent="UI" unique_id=1235697186]
+visible = false
+offset_left = 711.0
+offset_top = 185.0
+offset_right = 1199.0
+offset_bottom = 793.0
+script = ExtResource("31_e08e2")
+
+[node name="CallStatus" type="Label" parent="UI/EmergencyCallScreen" unique_id=1960752676]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 3.0
+offset_right = 486.0
+offset_bottom = 71.0
+
+[node name="OperatorLabel" type="Label" parent="UI/EmergencyCallScreen" unique_id=662736784]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 84.0
+offset_right = 482.0
+offset_bottom = 168.0
+
+[node name="PlayerLabel" type="Label" parent="UI/EmergencyCallScreen" unique_id=882488334]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 211.0
+offset_right = 472.0
+offset_bottom = 271.0
+
+[node name="ChoiceContainer" type="VBoxContainer" parent="UI/EmergencyCallScreen" unique_id=759890111]
+layout_mode = 0
+offset_left = 23.0
+offset_top = 257.0
+offset_right = 477.0
+offset_bottom = 595.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/EmergencyCallScreen" unique_id=635266904]
+layout_mode = 0
+offset_left = -5.0
+offset_top = 450.0
+offset_right = 497.0
+offset_bottom = 600.0
+
+[node name="TranscriptBox" type="VBoxContainer" parent="UI/EmergencyCallScreen/ScrollContainer" unique_id=887144655]
+layout_mode = 2
+
+[node name="PlayerOxygenBar" type="TextureProgressBar" parent="UI" unique_id=2141966190]
+offset_left = 40.0
+offset_top = 46.0
+offset_right = 288.0
+offset_bottom = 220.0
+value = 100.0
+fill_mode = 4
+radial_initial_angle = 180.0
+texture_under = ExtResource("32_r33sp")
+texture_progress = ExtResource("33_hdf80")
+
+[node name="CarOxygenBar" type="TextureProgressBar" parent="UI" unique_id=1755997811]
+offset_left = 64.0
+offset_top = 70.99997
+offset_right = 312.0
+offset_bottom = 244.99997
+scale = Vector2(0.8, 0.8)
+value = 100.0
+fill_mode = 4
+radial_initial_angle = 180.0
+texture_under = ExtResource("32_r33sp")
+texture_progress = ExtResource("34_hdf80")
+
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="." unique_id=18871552]
+
+[node name="SFXPlayer" type="AudioStreamPlayer" parent="." unique_id=7830147]
+
+[node name="HeartbeatPlayer" type="AudioStreamPlayer" parent="." unique_id=679832854]
+
+[node name="CreakPlayer" type="AudioStreamPlayer" parent="." unique_id=1313013465]
+
+[node name="GlassPlayer" type="AudioStreamPlayer" parent="." unique_id=591860620]
+
+[node name="AudioStreamPlayer6" type="AudioStreamPlayer" parent="." unique_id=867068746]
+
+[node name="AudioManager" type="Node" parent="." unique_id=2099460938]
+script = ExtResource("25_u50mg")
+
+[node name="GlassOverlay" type="Node2D" parent="." unique_id=708480625]
+script = ExtResource("26_cbgmd")

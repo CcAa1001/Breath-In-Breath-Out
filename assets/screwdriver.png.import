@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dsb16jmlw7qqa"
-path="res://.godot/imported/DuctTape.png-12a34432dca6110125a93e21d6b8e4f7.ctex"
+uid="uid://ytfn3jpxsmx7"
+path="res://.godot/imported/screwdriver.png-c90aae22d74400ed7088a9f0a9c30734.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/DuctTape.png"
-dest_files=["res://.godot/imported/DuctTape.png-12a34432dca6110125a93e21d6b8e4f7.ctex"]
+source_file="res://assets/screwdriver.png"
+dest_files=["res://.godot/imported/screwdriver.png-c90aae22d74400ed7088a9f0a9c30734.ctex"]
 
 [params]
 

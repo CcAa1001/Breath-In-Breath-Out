@@ -1,7 +1,7 @@
 extends ColorRect
 
 var mat: ShaderMaterial = null
-var flash_on: bool = false
+var flash_on: bool  = false
 var has_phone: bool = false
 var phone_uv: Vector2 = Vector2(1310.0 / 1920.0, 920.0 / 1080.0)
 
@@ -13,18 +13,19 @@ func _ready() -> void:
 		return
 	print("Shader OK!")
 	_reset_shader()
-	GameManager.item_picked.connect(_on_item_picked)
+	GameManager.item_picked.connect(_on_phone_picked)
+	GameManager.phone_dead.connect(_on_phone_dead)
 	_run_intro()
 
 func _reset_shader() -> void:
-	mat.set_shader_parameter("notif_on", false)
-	mat.set_shader_parameter("flash_on", false)
-	mat.set_shader_parameter("light_pos", phone_uv)
+	mat.set_shader_parameter("notif_on",    false)
+	mat.set_shader_parameter("flash_on",    false)
+	mat.set_shader_parameter("light_pos",   phone_uv)
 	mat.set_shader_parameter("notif_inner", 0.03)
 	mat.set_shader_parameter("notif_outer", 0.065)
 	mat.set_shader_parameter("flash_inner", 0.07)
 	mat.set_shader_parameter("flash_outer", 0.12)
-	mat.set_shader_parameter("flash_glow",  0.20)
+	mat.set_shader_parameter("flash_glow",  0.35)
 
 func _run_intro() -> void:
 	await get_tree().create_timer(1.5).timeout
@@ -33,22 +34,37 @@ func _run_intro() -> void:
 func _pulse_notification() -> void:
 	if mat == null: return
 	mat.set_shader_parameter("light_pos", phone_uv)
-	# 3 short pulses — tight notification light only
 	for i in range(3):
+		if has_phone: return
 		mat.set_shader_parameter("notif_on", true)
 		await get_tree().create_timer(0.25).timeout
+		if has_phone: return
 		mat.set_shader_parameter("notif_on", false)
 		await get_tree().create_timer(0.25).timeout
-	# leave notification glow on so player can find phone
+	if has_phone: return
 	mat.set_shader_parameter("notif_on", true)
-	GameManager.game_running = true
-	print("Game started!")
+	print("Game started! Find the glowing phone.")
 
-func _on_item_picked(item_name: String) -> void:
+func _on_phone_picked(item_name: String) -> void:
 	if item_name != "phone": return
 	has_phone = true
+	# fade out the notification glow
+	var tween = create_tween()
+	tween.tween_method(
+		func(v: float): mat.set_shader_parameter("ambient_light", v),
+		0.1, 0.0, 0.3)
+	await tween.finished
 	mat.set_shader_parameter("notif_on", false)
-	print("Phone collected! Press F for flashlight.")
+	mat.set_shader_parameter("light_on", false)
+	print("Phone collected — press F for flashlight.")
+
+func _on_phone_dead() -> void:
+	flash_on = false
+	if mat:
+		mat.set_shader_parameter("flash_on",      false)
+		mat.set_shader_parameter("notif_on",      false)
+		mat.set_shader_parameter("ambient_light", 0.0)
+	print("Phone dead — total darkness.")
 
 func toggle_light() -> void:
 	if mat == null or mat.shader == null:

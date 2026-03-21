@@ -1,28 +1,41 @@
 extends Area2D
 
-@export var item_name: String         = "item"
-@export var description: String       = "..."
-@export var dialogue: String          = ""
-@export var collectible: bool         = true
-@export var pov_target: String        = ""
-@export var starts_hidden: bool       = false
-@export var use_choice: bool          = false
-@export var choice_prompt: String     = ""
+const CURSOR_NORMAL = preload("res://assets/cursor_normal.png")
+const CURSOR_HOVER  = preload("res://assets/cursor_hover.png")
+
+@export var item_name: String             = "item"
+@export var description: String           = "..."
+@export var dialogue: String              = ""
+@export var collectible: bool             = true
+@export var pov_target: String            = ""
+@export var starts_hidden: bool           = false
+@export var use_choice: bool              = false
+@export var choice_prompt: String         = ""
 @export var choice_options: Array[String] = []
 
-var is_hovered: bool  = false
+var is_hovered: bool = false
 var highlight: ColorRect
 
 func _ready() -> void:
 	if starts_hidden:
 		visible = false
 	input_pickable = true
+
 	mouse_entered.connect(func():
 		is_hovered = true
-		if highlight and visible: highlight.visible = true)
+		if highlight and visible:
+			highlight.visible = true
+		if visible:
+			Input.set_custom_mouse_cursor(
+				CURSOR_HOVER, Input.CURSOR_ARROW, Vector2(0, 0)))
+
 	mouse_exited.connect(func():
 		is_hovered = false
-		if highlight: highlight.visible = false)
+		if highlight:
+			highlight.visible = false
+		Input.set_custom_mouse_cursor(
+			CURSOR_NORMAL, Input.CURSOR_ARROW, Vector2(0, 0)))
+
 	_make_highlight()
 
 func _make_highlight() -> void:
@@ -58,7 +71,6 @@ func _input(event: InputEvent) -> void:
 	if not is_hovered:      return
 	if GameManager.is_dead: return
 
-	# blacked out — player can only breathe
 	if GameManager.blacked_out:
 		if event is InputEventMouseButton and event.pressed:
 			GameManager.show_dialogue("Everything is going dark... hold Space to breathe!")
@@ -68,19 +80,27 @@ func _input(event: InputEvent) -> void:
 	if not event.pressed:                  return
 	if event.button_index != MOUSE_BUTTON_LEFT: return
 
+	# FIX — if player has an item selected, let main.gd handle the click
+	# do NOT consume the event here
+	var inv_ui = get_node_or_null("/root/Main/UI/InventoryPanel")
+	if inv_ui and inv_ui.has_method("get_active_item"):
+		var active = inv_ui.get_active_item()
+		if active != "":
+			return  # pass through to main.gd _input
+
+	# no item selected — consume and handle normally
 	get_viewport().set_input_as_handled()
 
 	# POV switch
 	if pov_target != "":
-		# back seat and trunk require seatbelt to be cut first
 		if pov_target == "back" or pov_target == "trunk":
 			if not GameManager.seatbelt_cut:
-				GameManager.show_dialogue("I'm still buckled in. I need to cut the seatbelt first!")
+				GameManager.show_dialogue("I'm still buckled in. Cut the seatbelt first!")
 				return
 		GameManager.request_pov_switch(pov_target)
 		return
 
-	# dialogue choice
+	# choice
 	if use_choice and choice_options.size() > 0:
 		GameManager.show_choice(
 			choice_prompt if choice_prompt != "" else description,
@@ -92,48 +112,38 @@ func _input(event: InputEvent) -> void:
 	if line != "":
 		GameManager.show_dialogue(line)
 
-	# collectible item
+	# collectible
 	if collectible:
 		visible = false
 		GameManager.pick_item(item_name, self)
 		_on_collected()
 		return
 
-	# non-collectible interaction
+	# non-collectible
 	_handle_interaction()
 
 func _on_collected() -> void:
 	match item_name:
 		"phone":
 			GameManager.show_dialogue("My phone! Press F for flashlight, P to open messages.")
-
 		"cutter":
-			GameManager.show_dialogue("A seatbelt cutter! Now I can free myself.")
-
+			GameManager.show_dialogue("A seatbelt cutter! Select it then left click to use.")
 		"screwdriver":
-			GameManager.show_dialogue("A screwdriver. I can use this to open the glove box.")
-			# mark that we have the tool — glove box step advances on use
+			GameManager.show_dialogue("A screwdriver. Select it then left click to open the glove box.")
 			if GameManager.escape_step < 2:
 				GameManager.escape_step = 2
 				GameManager.emit_signal("escape_step_changed", 2)
-
 		"duct_tape":
-			GameManager.show_dialogue("Duct tape! I can seal the cracked windows with this.")
-
+			GameManager.show_dialogue("Duct tape! Select it then left click on a crack.")
 		"emergency_number":
 			GameManager.has_emergency_number = true
-			GameManager.show_dialogue("An emergency number! I can call this on my phone.")
+			GameManager.show_dialogue("An emergency number! Call 112 on my phone.")
 			GameManager.escape_step = max(GameManager.escape_step, 4)
 			GameManager.emit_signal("escape_step_changed", GameManager.escape_step)
-
 		"hammer":
-			GameManager.show_choice(
-				"I found a hammer. What do I do with it?",
-				["Bang on the car for rescue", "Keep it for now"])
-
+			GameManager.show_dialogue("A hammer! Select it then left click to use.")
 		"car_jack":
 			GameManager.show_dialogue("A car jack! Hold E near the door to use it.")
-
 		"shovel":
 			GameManager.show_dialogue("A shovel! This is my way out.")
 			GameManager.escape_step = max(GameManager.escape_step, 6)
@@ -141,93 +151,73 @@ func _on_collected() -> void:
 
 func _handle_interaction() -> void:
 	match item_name:
-
-		# ---- FRONT SEAT ----
 		"seatbelt":
 			if GameManager.seatbelt_cut:
-				GameManager.show_dialogue("Already cut free.")
+				GameManager.show_dialogue("The seatbelt is already cut.")
 			elif GameManager.has_item("cutter"):
-				GameManager.cut_seatbelt()
+				GameManager.show_dialogue("Select the cutter (1 or 2) then left click.")
 			else:
-				GameManager.show_dialogue("I'm strapped in tight. I need something sharp to cut it.")
+				GameManager.show_dialogue("I'm strapped in. I need something sharp.")
 
 		"glove_box":
-			if GameManager.escape_step < 2:
-				GameManager.show_dialogue("It's locked shut. I need a tool — maybe in the back seat.")
-			elif GameManager.escape_step == 2:
-				if GameManager.has_item("screwdriver"):
-					GameManager.advance_escape_step("screwdriver")
-					GameManager.show_dialogue("Got it open with the screwdriver!")
-					GameManager.request_pov_switch("glovebox")
-				else:
-					GameManager.show_dialogue("Locked. I need a screwdriver — check the back seat.")
-			else:
-				# already unlocked — just open the view
+			if GameManager.escape_step >= 3:
 				GameManager.request_pov_switch("glovebox")
+			elif GameManager.has_item("screwdriver"):
+				GameManager.show_dialogue("Select the screwdriver (1 or 2) then left click.")
+			else:
+				GameManager.show_dialogue("It's locked. I need a tool.")
 
-		"steering_wheel":
-			GameManager.show_dialogue("Completely jammed. The car isn't going anywhere.")
+		"door":
+			if GameManager.jack_complete:
+				GameManager.show_dialogue("The door is forced open!")
+			elif GameManager.jack_placed:
+				GameManager.show_dialogue("Keep holding E to roll the jack.")
+			elif GameManager.has_item("car_jack"):
+				GameManager.show_dialogue("Hold E to place the car jack.")
+			else:
+				GameManager.show_dialogue("The door is jammed. I need a car jack from the trunk.")
+
+		"dirt_exit":
+			if GameManager.has_item("shovel") and GameManager.jack_complete:
+				GameManager.show_dialogue("Select the shovel then left click to dig out.")
+			elif not GameManager.jack_complete:
+				GameManager.show_dialogue("Force the door open first.")
+			else:
+				GameManager.show_dialogue("I need the shovel from the trunk.")
 
 		"honk":
-			if GameManager.rescue_called:
-				GameManager.use_hammer_for_noise()
-				GameManager.show_dialogue("*HOOOONK* — They might hear that!")
-			else:
-				GameManager.show_dialogue("*HONK* — No one can hear me this deep underground...")
+			GameManager.show_dialogue("*HONK* — No one can hear me this deep...")
+			var audio = get_node_or_null("/root/Main/AudioManager")
+			if audio: audio.play_honk()
+
+		"steering_wheel":
+			GameManager.show_dialogue("Completely jammed.")
+
+		"rearview_mirror":
+			GameManager.show_dialogue("Just darkness outside. We're deep underground.")
+
+		"center_console":
+			GameManager.show_dialogue("Just some change and an old receipt.")
 
 		"front_window":
 			_handle_window("front")
-
 		"left_window":
 			_handle_window("left")
-
 		"right_window":
 			_handle_window("right")
-
-		"door":
-			if not GameManager.seatbelt_cut:
-				GameManager.show_dialogue("I'm still in the seatbelt. I can't force the door like this.")
-			elif not GameManager.has_item("car_jack"):
-				GameManager.show_dialogue("The door is jammed solid. I need a car jack from the trunk.")
-			elif not GameManager.jack_complete:
-				GameManager.show_dialogue("I need to set the car jack first. Hold E to roll it in place.")
-			else:
-				GameManager.show_dialogue("The door is giving way! Now I need the shovel to dig out.")
-				GameManager.escape_step = max(GameManager.escape_step, 6)
-				GameManager.emit_signal("escape_step_changed", GameManager.escape_step)
-
-		"call_button":
-			GameManager.call_emergency()
-
-		# ---- BACK SEAT ----
-		"hammer_use":
-			GameManager.show_choice(
-				"What do you want to do with the hammer?",
-				["Bang for rescue", "Break a window (bad idea)", "Put it away"])
-
 		"rear_window":
 			_handle_window("rear")
 
-		# ---- TRUNK ----
-		"dirt_exit":
-			if not GameManager.jack_complete:
-				GameManager.show_dialogue("The door isn't open yet. I need the car jack first.")
-			elif not GameManager.has_item("shovel"):
-				GameManager.show_dialogue("I need the shovel to dig through.")
-			else:
-				GameManager.show_choice(
-					"I can see packed soil above me. The shovel is ready.",
-					["Start digging!", "Wait for rescue instead"])
-
 		_:
-			pass
+			if dialogue != "":
+				GameManager.show_dialogue(dialogue)
 
 func _handle_window(window_id: String) -> void:
-	var phase  = GameManager.glass_phases.get(window_id, 0)
-	var taped  = GameManager.glass_taped.get(window_id, false)
+	var phase = GameManager.glass_phases.get(window_id, 0)
+	var taped = GameManager.glass_taped.get(window_id, false)
 
 	if taped:
-		GameManager.show_dialogue("The " + window_id + " window is taped. It should hold.")
+		GameManager.show_dialogue("The " + window_id + " window is taped.")
 		return
 
 	match phase:
@@ -236,15 +226,13 @@ func _handle_window(window_id: String) -> void:
 		1, 2, 3:
 			var severity = ["", "a small crack", "a spreading crack", "about to shatter!"]
 			if GameManager.has_item("duct_tape"):
-				GameManager.show_choice(
-					"The " + window_id + " window has " + severity[phase],
-					["Tape it now", "Leave it for now"])
+				GameManager.show_dialogue("The " + window_id + " window has " +
+					severity[phase] + ". Select tape then left click here.")
 			else:
-				GameManager.show_dialogue(
-					"The " + window_id + " window has " + severity[phase] + ". I need duct tape!")
+				GameManager.show_dialogue("The " + window_id + " window has " +
+					severity[phase] + ". I need duct tape!")
 		4:
-			GameManager.show_dialogue(
-				"The " + window_id + " window is shattered. Soil is seeping in.")
+			GameManager.show_dialogue("The " + window_id + " window is shattered. Soil is seeping in.")
 
 func _reveal_node(node_name: String) -> void:
 	var paths = [
@@ -257,6 +245,4 @@ func _reveal_node(node_name: String) -> void:
 		var n = get_node_or_null(p)
 		if n:
 			n.visible = true
-			print("Revealed: ", p)
 			return
-	print("WARNING: Could not reveal node: ", node_name)
