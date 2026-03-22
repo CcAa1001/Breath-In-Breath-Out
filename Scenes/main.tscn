@@ -43,10 +43,13 @@
 [ext_resource type="Texture2D" uid="uid://doj2kxyb85p13" path="res://assets/phone_msg_jake.png" id="33_nwwfm"]
 [ext_resource type="Texture2D" uid="uid://cccrryk5nc7s4" path="res://assets/car_bar_fill.png" id="34_hdf80"]
 [ext_resource type="Texture2D" uid="uid://e2hg4wjhpuv7" path="res://assets/phone_msg_mom.pg.png" id="34_s8vy0"]
+[ext_resource type="Script" uid="uid://c50o8ogomxip7" path="res://Scripts/choice_ui.gd" id="36_jut3y"]
 [ext_resource type="Script" uid="uid://bjvvusuox5wlm" path="res://Scripts/tape_mode.gd" id="41_8cuat"]
 [ext_resource type="Script" uid="uid://bqlsoxhxig1yv" path="res://Scripts/game_over.gd" id="42_s8vy0"]
 [ext_resource type="Texture2D" uid="uid://dsb16jmlw7qqa" path="res://assets/crack_tape.png" id="43_aa8k8"]
+[ext_resource type="Script" uid="uid://bbqx3mg34gods" path="res://Scripts/tutorial_ui.gd" id="44_dmskm"]
 [ext_resource type="Script" uid="uid://b07sk0d3json3" path="res://Scripts/tape_placement.gd" id="44_kqrg6"]
+[ext_resource type="Script" uid="uid://dft3bxo0sw7ps" path="res://Scripts/intro_ui.gd" id="45_xdkp6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ynf5e"]
 size = Vector2(83.18201, 135)
@@ -899,6 +902,7 @@ offset_left = 740.0
 offset_top = 677.0
 offset_right = 1164.0
 offset_bottom = 814.0
+script = ExtResource("36_jut3y")
 
 [node name="ChoiceLabel" type="Label" parent="UI/ChoicePanel" unique_id=901536071]
 layout_mode = 0
@@ -1101,20 +1105,123 @@ offset_top = 766.0
 offset_right = 1086.0
 offset_bottom = 855.0
 
-[node name="MusicPlayer" type="AudioStreamPlayer" parent="." unique_id=18871552]
+[node name="TutorialScreen" type="Control" parent="UI" unique_id=2023440809]
+process_mode = 3
+z_index = 50
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("44_dmskm")
 
-[node name="SFXPlayer" type="AudioStreamPlayer" parent="." unique_id=7830147]
+[node name="TutorialImage" type="TextureRect" parent="UI/TutorialScreen" unique_id=1323155470]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
-[node name="HeartbeatPlayer" type="AudioStreamPlayer" parent="." unique_id=679832854]
+[node name="NextBtn" type="Button" parent="UI/TutorialScreen" unique_id=315972962]
+layout_mode = 0
+offset_left = 1735.0
+offset_top = 856.0
+offset_right = 1851.0
+offset_bottom = 1020.0
 
-[node name="CreakPlayer" type="AudioStreamPlayer" parent="." unique_id=1313013465]
+[node name="CloseBtn" type="Button" parent="UI/TutorialScreen" unique_id=1482829152]
+layout_mode = 0
+offset_left = 1773.0
+offset_top = 47.0
+offset_right = 1876.0
+offset_bottom = 138.0
 
-[node name="GlassPlayer" type="AudioStreamPlayer" parent="." unique_id=591860620]
+[node name="IntroScreen" type="Control" parent="UI" unique_id=407497301]
+process_mode = 3
+z_index = 49
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("45_xdkp6")
 
-[node name="AudioStreamPlayer6" type="AudioStreamPlayer" parent="." unique_id=867068746]
+[node name="IntroBG" type="TextureRect" parent="UI/IntroScreen" unique_id=608881745]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="DialogueBox" type="Panel" parent="UI/IntroScreen/IntroBG" unique_id=1462008507]
+layout_mode = 0
+offset_left = 224.0
+offset_top = 701.0
+offset_right = 1686.0
+offset_bottom = 999.0
+
+[node name="SpeakerLabel" type="Label" parent="UI/IntroScreen/IntroBG/DialogueBox" unique_id=492618683]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 31.0
+offset_right = 625.0
+offset_bottom = 131.0
+theme_override_font_sizes/font_size = 33
+
+[node name="DialogueText" type="Label" parent="UI/IntroScreen/IntroBG/DialogueBox" unique_id=1272273896]
+layout_mode = 0
+offset_left = 264.0
+offset_top = 31.0
+offset_right = 1373.0
+offset_bottom = 271.0
+theme_override_font_sizes/font_size = 33
+autowrap_mode = 1
+
+[node name="Label" type="Label" parent="UI/IntroScreen/IntroBG/DialogueBox" unique_id=475683121]
+layout_mode = 0
+offset_left = 410.0
+offset_top = 6.0
+offset_right = 1376.0
+offset_bottom = 266.0
+theme_override_font_sizes/font_size = 33
+
+[node name="Hint" type="Label" parent="UI/IntroScreen/IntroBG/DialogueBox" unique_id=134708241]
+layout_mode = 0
+offset_left = 1279.0
+offset_top = 267.0
+offset_right = 1453.0
+offset_bottom = 295.0
+theme_override_font_sizes/font_size = 20
+text = "Press To Continue"
+
+[node name="TapToContinue" type="Control" parent="UI/IntroScreen" unique_id=737999657]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="AudioManager" type="Node" parent="." unique_id=2099460938]
 script = ExtResource("25_u50mg")
+
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="AudioManager" unique_id=18871552]
+
+[node name="SFXPlayer" type="AudioStreamPlayer" parent="AudioManager" unique_id=7830147]
+
+[node name="HeartbeatPlayer" type="AudioStreamPlayer" parent="AudioManager" unique_id=679832854]
+
+[node name="BreathPlayer" type="AudioStreamPlayer" parent="AudioManager" unique_id=1313013465]
+
+[node name="SirenePlayer" type="AudioStreamPlayer" parent="AudioManager" unique_id=591860620]
+
+[node name="GroanPlayer" type="AudioStreamPlayer" parent="AudioManager" unique_id=867068746]
 
 [node name="GlassOverlay" type="Node2D" parent="." unique_id=708480625]
 script = ExtResource("26_cbgmd")

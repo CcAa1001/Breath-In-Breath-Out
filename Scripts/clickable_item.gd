@@ -17,42 +17,38 @@ var is_hovered: bool = false
 var highlight: ColorRect
 
 func _ready() -> void:
-	if starts_hidden:
-		visible = false
+	if starts_hidden: visible = false
 	input_pickable = true
+	add_to_group("clickable")
 
 	mouse_entered.connect(func():
 		is_hovered = true
-		if highlight and visible:
-			highlight.visible = true
+		if highlight and visible: highlight.visible = true
 		if visible:
-			Input.set_custom_mouse_cursor(
-				CURSOR_HOVER, Input.CURSOR_ARROW, Vector2(0, 0)))
+			Input.set_custom_mouse_cursor(CURSOR_HOVER, Input.CURSOR_ARROW, Vector2(0, 0)))
 
 	mouse_exited.connect(func():
 		is_hovered = false
-		if highlight:
-			highlight.visible = false
-		Input.set_custom_mouse_cursor(
-			CURSOR_NORMAL, Input.CURSOR_ARROW, Vector2(0, 0)))
+		if highlight: highlight.visible = false
+		Input.set_custom_mouse_cursor(CURSOR_NORMAL, Input.CURSOR_ARROW, Vector2(0, 0)))
 
 	_make_highlight()
 
 func _make_highlight() -> void:
-	highlight = ColorRect.new()
+	highlight              = ColorRect.new()
 	highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	highlight.color = Color(1, 1, 0, 0.15)
+	highlight.color        = Color(1, 1, 0, 0.15)
 	var s = get_node_or_null("Shape")
 	if s == null:
 		print("WARNING: No Shape child on: ", item_name)
 		return
 	if s.shape is RectangleShape2D:
-		var shape = s.shape as RectangleShape2D
+		var shape          = s.shape as RectangleShape2D
 		highlight.size     = shape.size
 		highlight.position = -shape.size / 2
 	elif s.shape is CircleShape2D:
-		var shape = s.shape as CircleShape2D
-		var r = shape.radius
+		var shape          = s.shape as CircleShape2D
+		var r              = shape.radius
 		highlight.size     = Vector2(r * 2, r * 2)
 		highlight.position = Vector2(-r, -r)
 	highlight.visible = false
@@ -71,28 +67,29 @@ func _input(event: InputEvent) -> void:
 	if not is_hovered:      return
 	if GameManager.is_dead: return
 
-	if GameManager.blacked_out:
-		if event is InputEventMouseButton and event.pressed:
-			GameManager.show_dialogue("Everything is going dark... hold Space to breathe!")
-		return
-
 	if not event is InputEventMouseButton: return
 	if not event.pressed:                  return
 	if event.button_index != MOUSE_BUTTON_LEFT: return
 
-	# FIX — if player has an item selected, let main.gd handle the click
-	# do NOT consume the event here
-	var inv_ui = get_node_or_null("/root/Main/UI/InventoryPanel")
-	if inv_ui and inv_ui.has_method("get_active_item"):
-		var active = inv_ui.get_active_item()
-		if active != "":
-			return  # pass through to main.gd _input
+	# block if choice panel open
+	var choice_panel = get_node_or_null("/root/Main/UI/ChoicePanel")
+	if choice_panel and choice_panel.visible:
+		get_viewport().set_input_as_handled()
+		return
 
-	# no item selected — consume and handle normally
-	get_viewport().set_input_as_handled()
+	# block if phone open
+	var phone = get_node_or_null("/root/Main/UI/PhoneScreen")
+	if phone and phone.visible:
+		get_viewport().set_input_as_handled()
+		return
 
-	# POV switch
+	if GameManager.blacked_out:
+		GameManager.show_dialogue("Everything is going dark... hold Space!")
+		return
+
+	# POV arrows always work regardless of held item
 	if pov_target != "":
+		get_viewport().set_input_as_handled()
 		if pov_target == "back" or pov_target == "trunk":
 			if not GameManager.seatbelt_cut:
 				GameManager.show_dialogue("I'm still buckled in. Cut the seatbelt first!")
@@ -100,26 +97,30 @@ func _input(event: InputEvent) -> void:
 		GameManager.request_pov_switch(pov_target)
 		return
 
-	# choice
+	# if item selected — don't consume, let main.gd _unhandled_input handle it
+	var inv_ui = get_node_or_null("/root/Main/UI/InventoryPanel")
+	if inv_ui and inv_ui.has_method("get_active_item"):
+		if inv_ui.get_active_item() != "":
+			return
+
+	# no item selected — handle normally
+	get_viewport().set_input_as_handled()
+
 	if use_choice and choice_options.size() > 0:
 		GameManager.show_choice(
 			choice_prompt if choice_prompt != "" else description,
 			choice_options)
 		return
 
-	# show dialogue
-	var line = dialogue if dialogue != "" else description
-	if line != "":
-		GameManager.show_dialogue(line)
+	var dialogue_line = dialogue if dialogue != "" else description
+	if dialogue_line != "": GameManager.show_dialogue(dialogue_line)
 
-	# collectible
 	if collectible:
 		visible = false
 		GameManager.pick_item(item_name, self)
 		_on_collected()
 		return
 
-	# non-collectible
 	_handle_interaction()
 
 func _on_collected() -> void:
@@ -140,7 +141,7 @@ func _on_collected() -> void:
 				GameManager.has_emergency_number = true
 				GameManager.escape_step = max(GameManager.escape_step, 4)
 				GameManager.emit_signal("escape_step_changed", GameManager.escape_step)
-				GameManager.show_dialogue("An emergency number! I memorised it — 112. Call it on my phone.")
+				GameManager.show_dialogue("A number — 112. I need to call this on my phone!")
 			else:
 				GameManager.show_dialogue("I already know the number — 112.")
 		"hammer":
@@ -151,7 +152,6 @@ func _on_collected() -> void:
 			GameManager.show_dialogue("A shovel! This is my way out.")
 			GameManager.escape_step = max(GameManager.escape_step, 6)
 			GameManager.emit_signal("escape_step_changed", GameManager.escape_step)
-
 
 func _handle_interaction() -> void:
 	match item_name:
@@ -164,6 +164,7 @@ func _handle_interaction() -> void:
 				GameManager.show_dialogue("I'm strapped in tight.")
 				var audio = get_node_or_null("/root/Main/AudioManager")
 				if audio: audio.play_seatbelt_stuck()
+
 		"door":
 			if GameManager.jack_complete:
 				GameManager.show_dialogue("The door is forced open!")
@@ -175,26 +176,24 @@ func _handle_interaction() -> void:
 				GameManager.show_dialogue("The door won't budge!")
 				var audio = get_node_or_null("/root/Main/AudioManager")
 				if audio: audio.play_door_wont_budge()
-				
+
 		"emergency_number":
-			print("Emergency number clicked! Current has_number: ", GameManager.has_emergency_number)
 			if not GameManager.has_emergency_number:
 				GameManager.has_emergency_number = true
 				GameManager.escape_step = max(GameManager.escape_step, 4)
 				GameManager.emit_signal("escape_step_changed", GameManager.escape_step)
 				GameManager.show_dialogue("An emergency number! I memorised it — 112. Call it on my phone.")
-				print("has_emergency_number is now TRUE")
 			else:
 				GameManager.show_dialogue("I already know the number — 112.")
-				
+
 		"glove_box":
 			if GameManager.escape_step >= 3:
 				GameManager.request_pov_switch("glovebox")
 			elif GameManager.has_item("screwdriver"):
-				GameManager.show_dialogue("Select the screwdriver (1 or 2) then left click.")
+				GameManager.show_dialogue("Select the screwdriver then left click.")
 			else:
 				GameManager.show_dialogue("It's locked. I need a tool.")
-				
+
 		"dirt_exit":
 			if GameManager.has_item("shovel") and GameManager.jack_complete:
 				GameManager.show_dialogue("Select the shovel then left click to dig out.")
@@ -205,7 +204,7 @@ func _handle_interaction() -> void:
 
 		"honk":
 			if GameManager.honk_broken:
-				GameManager.show_dialogue("*click* — The horn is broken. The impact must have damaged it.")
+				GameManager.show_dialogue("*click* — The horn is broken.")
 			elif GameManager.rescue_called:
 				GameManager.show_dialogue("*HONK* — Maybe they'll hear that!")
 				GameManager.use_hammer_for_noise()
@@ -216,34 +215,23 @@ func _handle_interaction() -> void:
 
 		"steering_wheel":
 			GameManager.show_dialogue("Completely jammed.")
-
 		"rearview_mirror":
 			GameManager.show_dialogue("Just darkness outside. We're deep underground.")
-
 		"center_console":
 			GameManager.show_dialogue("Just some change and an old receipt.")
-
-		"front_window":
-			_handle_window("front")
-		"left_window":
-			_handle_window("left")
-		"right_window":
-			_handle_window("right")
-		"rear_window":
-			_handle_window("rear")
-
+		"front_window":  _handle_window("front")
+		"left_window":   _handle_window("left")
+		"right_window":  _handle_window("right")
+		"rear_window":   _handle_window("rear")
 		_:
-			if dialogue != "":
-				GameManager.show_dialogue(dialogue)
+			if dialogue != "": GameManager.show_dialogue(dialogue)
 
 func _handle_window(window_id: String) -> void:
 	var phase = GameManager.glass_phases.get(window_id, 0)
 	var taped = GameManager.glass_taped.get(window_id, false)
-
 	if taped:
 		GameManager.show_dialogue("The " + window_id + " window is taped.")
 		return
-
 	match phase:
 		0:
 			GameManager.show_dialogue("The " + window_id + " window looks intact... for now.")

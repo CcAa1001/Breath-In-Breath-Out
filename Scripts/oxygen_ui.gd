@@ -33,12 +33,14 @@ func _ready() -> void:
 	if not dialogue_box: print("MISSING: DialogueLabel")
 	if not choice_panel: print("MISSING: ChoicePanel")
 
+
+	GameManager.dialogue_requested.connect(_on_dialogue)
 	# connect signals — oxygen handled in _process instead
 	GameManager.breath_prompt_show.connect(_on_prompt_show)
 	GameManager.breath_prompt_hide.connect(_on_prompt_hide)
 	GameManager.breath_progress.connect(_on_breath_progress)
 	GameManager.breath_taken.connect(_on_breath_taken)
-	GameManager.dialogue_requested.connect(_on_dialogue)
+
 	GameManager.choice_requested.connect(_on_choice)
 	GameManager.panic_updated.connect(_on_panic)
 	GameManager.game_over.connect(_on_game_over)
@@ -193,18 +195,18 @@ func _on_breath_taken() -> void:
 # DIALOGUE
 # -------------------------------------------------------
 func _on_dialogue(text: String) -> void:
-	if not dialogue_box:
-		print("ERROR: DialogueLabel missing — cannot show: ", text)
+	var label = get_node_or_null("DialogueLabel")
+	if not label:
+		label = find_child("DialogueLabel", true, false)
+	if not label:
+		print("ERROR: DialogueLabel not found!")
 		return
-	dialogue_box.text = text
-	if dialogue_tween and dialogue_tween.is_valid():
-		dialogue_tween.kill()
-	dialogue_box.modulate.a = 1.0
-	dialogue_box.visible    = true
-	dialogue_tween = create_tween()
-	dialogue_tween.tween_interval(3.5)
-	dialogue_tween.tween_property(dialogue_box, "modulate:a", 0.0, 0.6)
-	dialogue_tween.tween_callback(func(): dialogue_box.visible = false)
+	label.visible = true
+	label.text    = text
+	# auto hide after 4 seconds
+	await get_tree().create_timer(4.0).timeout
+	if label and label.text == text:
+		label.visible = false
 
 # -------------------------------------------------------
 # CHOICE PANEL

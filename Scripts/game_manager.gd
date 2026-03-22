@@ -28,14 +28,14 @@ signal cue_changed(cue: int)
 signal hammer_banged()
 
 # ---- MASTER SETTINGS ----
-var player_drain_rate: float    = 10.0
-var car_drain_rate: float       = 0.0
+var player_drain_rate: float    = 0.556
+var car_drain_rate: float       = 0.3
 var breath_cost: float          = 10.0
 var breath_hold_required: float = 1.5
-var breath_cooldown_max: float  = 5.0
+var breath_cooldown_max: float  = 10.0
 var breath_restore: float       = 100.0
 var battery_drain_rate: float   = 0.833
-var panic_build_rate: float     = 5.0
+var panic_build_rate: float     = 3.0
 var panic_decay_rate: float     = 1.5
 var blackout_death_time: float  = 5.0
 var glass_crack_interval: float = 30.0
@@ -77,6 +77,9 @@ var duct_tape_uses:   int        = 6
 var rescue_called: bool        = false
 var rescue_timer: float        = 0.0
 var has_emergency_number: bool = false
+
+# hammer cooldown — FIX: prevents spam exploit
+var hammer_cooldown: float = 0.0
 
 # car jack
 var jack_progress: float  = 0.0
@@ -121,10 +124,13 @@ func _ready() -> void:
 	for msg in PhoneContent.scheduled_messages:
 		message_timers.append(msg["time"])
 	rescue_arrival_time = PhoneContent.rescue_arrival_time
-	glass_timers["front"] = 0.0
-	glass_timers["left"]  = randf_range(0.0, glass_crack_interval * 0.5)
-	glass_timers["right"] = randf_range(0.0, glass_crack_interval * 0.5)
-	glass_timers["rear"]  = randf_range(0.0, glass_crack_interval * 0.3)
+
+	# FIX 3: Apply random offsets to glass_points, not glass_timers
+	# glass_timers was never used — this actually staggers the windows
+	glass_points["front"] = 0.0
+	glass_points["left"]  = randf_range(0.0, 50.0)
+	glass_points["right"] = randf_range(0.0, 50.0)
+	glass_points["rear"]  = randf_range(0.0, 30.0)
 
 # -------------------------------------------------------
 # PROCESS
@@ -156,15 +162,13 @@ func _process(delta: float) -> void:
 		blackout_timer = 0.0
 		emit_signal("player_blacked_out", true)
 
+	# FIX 4: removed early wake-up check from here
+	# _complete_breath() handles waking up properly
 	if blacked_out:
 		blackout_timer += delta
 		if blackout_timer >= blackout_death_time:
 			_die_suffocated()
 			return
-		if player_o2 > 5.0:
-			blacked_out    = false
-			blackout_timer = 0.0
-			emit_signal("player_blacked_out", false)
 
 	# car air empty
 	if car_o2 <= 0.0:
@@ -196,10 +200,11 @@ func _process(delta: float) -> void:
 	panic = clamp(panic + panic_delta, 0.0, 100.0)
 	emit_signal("panic_updated", panic)
 
-	# panic shake signal — starts at 50 panic
+	# FIX 2: always emit panic_shake — sends 0 when calm so camera resets
 	if panic >= 50.0:
-		var shake_intensity = remap(panic, 50.0, 100.0, 0.0, 8.0)
-		emit_signal("panic_shake", shake_intensity)
+		emit_signal("panic_shake", remap(panic, 50.0, 100.0, 0.0, 8.0))
+	else:
+		emit_signal("panic_shake", 0.0)
 
 	# extra O2 drain at high panic
 	if panic >= 70.0:
@@ -218,6 +223,10 @@ func _process(delta: float) -> void:
 	elif player_o2 > 55.0 and prompt_active and not is_breathing:
 		prompt_active = false
 		emit_signal("breath_prompt_hide")
+
+	# FIX 2: hammer cooldown tick
+	if hammer_cooldown > 0.0:
+		hammer_cooldown -= delta
 
 	_update_glass(delta)
 
@@ -320,11 +329,6 @@ func apply_duct_tape() -> void:
 # RESCUE
 # -------------------------------------------------------
 func call_emergency() -> void:
-	print("call_emergency called")
-	print("phone_collected: ", phone_collected)
-	print("phone_is_dead: ", phone_is_dead)
-	print("has_emergency_number: ", has_emergency_number)
-	print("rescue_called: ", rescue_called)
 	if not phone_collected:
 		show_dialogue("I need my phone.")
 		return
@@ -351,7 +355,13 @@ func use_hammer_for_noise() -> void:
 	if not rescue_called:
 		show_dialogue("*BANG* — No one can hear me. Call for help first.")
 		return
-	rescue_timer = max(rescue_timer - 20.0, 1.0)
+	# FIX 2: hammer cooldown prevents spam exploit
+	if hammer_cooldown > 0.0:
+		show_dialogue("I need to recover before banging again...")
+		return
+	hammer_cooldown = 3.0
+	player_o2       = clamp(player_o2 - 5.0, 0.0, 100.0)
+	rescue_timer    = max(rescue_timer - 20.0, 1.0)
 	show_dialogue("*BANG BANG BANG* — " + str(int(rescue_timer)) + "s until rescue!")
 	emit_signal("hammer_banged")
 
@@ -403,6 +413,7 @@ func _complete_breath() -> void:
 	breath_hold_time = 0.0
 	breath_cooldown  = breath_cooldown_max
 	prompt_active    = false
+	# FIX 4: blackout cleared HERE after full breath — not in _process
 	if blacked_out and player_o2 > 5.0:
 		blacked_out    = false
 		blackout_timer = 0.0
@@ -452,6 +463,7 @@ func _trigger_rescue_win() -> void:
 	_win("rescue")
 
 func _win(ending: String) -> void:
+	is_dead      = true   # ADD — prevents further input
 	game_running = false
 	emit_signal("game_won", ending)
 
@@ -472,11 +484,20 @@ func _die_buried() -> void:
 # -------------------------------------------------------
 func pick_item(item_name: String, node: Node) -> void:
 	item_nodes[item_name] = node
+
 	if item_name == "phone":
 		if not phone_collected:
 			phone_collected = true
 			emit_signal("item_picked", item_name)
 		return
+
+	# FIX 5: emergency number never takes a slot — just unlocks mechanic
+	if item_name == "emergency_number":
+		if not has_emergency_number:
+			has_emergency_number = true
+			emit_signal("item_picked", item_name)
+		return
+
 	if item_name in inventory: return
 	if inventory.size() >= max_slots:
 		var dropped = inventory.pop_front()
@@ -488,11 +509,14 @@ func pick_item(item_name: String, node: Node) -> void:
 
 func has_item(item_name: String) -> bool:
 	if item_name == "phone": return phone_collected
+	if item_name == "emergency_number": return has_emergency_number
 	return item_name in inventory
 
 func remove_item(item_name: String) -> void:
 	if item_name == "phone":
 		phone_collected = false
+	elif item_name == "emergency_number":
+		has_emergency_number = false
 	else:
 		inventory.erase(item_name)
 	emit_signal("item_dropped", item_name)
@@ -519,6 +543,64 @@ func show_dialogue(text: String) -> void:
 
 func request_pov_switch(target: String) -> void:
 	emit_signal("pov_switch_requested", target)
+	
+func handle_choice(option: String) -> void:
+	print("Choice selected: ", option)
+	match option:
+		# --- SHOVEL ---
+		"Start digging!":
+			show_dialogue("I'm digging through the soil... almost there!")
+			game_running = false  # stop systems during win sequence
+			await get_tree().create_timer(2.0).timeout
+			_win("dig")
+
+		"Wait and see", "Wait for rescue instead":
+			show_dialogue("I'll hold on... rescue is coming.")
+			# if rescue already called, they just wait — no action needed
+			# if not called yet, remind them
+			if not rescue_called:
+				show_dialogue("I should call for help first before waiting.")
+
+		# --- HAMMER ---
+		"Bang on car — signal rescue":
+			use_hammer_for_noise()
+		"Keep it for now":
+			show_dialogue("I'll save it for later.")
+
+		"Break a window (BAD IDEA)":
+			# show second confirmation
+			show_choice("Really break the window? Soil will flood in.",
+				["Yes, smash it!", "No, stop!"])
+
+		"Yes, smash it!":
+			show_dialogue("*SMASH* — Soil pours in instantly!")
+			# break the most cracked window
+			var worst_window = ""
+			var worst_phase  = 0
+			for w in glass_phases.keys():
+				if glass_phases[w] > worst_phase and glass_phases[w] < 4:
+					worst_phase  = glass_phases[w]
+					worst_window = w
+			if worst_window != "":
+				glass_phases[worst_window] = 3
+				emit_signal("glass_cracked", worst_window, 3)
+				await get_tree().create_timer(0.5).timeout
+				_advance_crack(worst_window)
+			else:
+				soil_multiplier += 1.5
+				emit_signal("soil_speed_changed", soil_multiplier)
+			await get_tree().create_timer(3.0).timeout
+			_die_buried()
+
+		"No, stop!", "No, that's a bad idea", "Put it away", "Keep it for now":
+			show_dialogue("Better not risk it.")
+
+		# --- HONK ---
+		"Honk the horn":
+			show_dialogue("*HONK HONK* — No one can hear me down here...")
+
+		_:
+			show_dialogue("...")
 
 # -------------------------------------------------------
 # RESET
@@ -531,7 +613,7 @@ func reset() -> void:
 	blacked_out = false; blackout_timer = 0.0; phone_is_dead = false
 	rescue_called = false; rescue_timer = 0.0; has_emergency_number = false
 	jack_progress = 0.0; jack_complete = false; jack_placed = false
-	_jack_msg_shown = false; escape_step = 0
+	_jack_msg_shown = false; escape_step = 0; hammer_cooldown = 0.0
 	duct_tape_uses = 6; phone_collected = false
 	current_cue = 1; game_elapsed = 0.0; cue_2_started = false
 	honk_broken = false
@@ -549,7 +631,8 @@ func reset() -> void:
 	for msg in PhoneContent.scheduled_messages:
 		message_timers.append(msg["time"])
 	rescue_arrival_time = PhoneContent.rescue_arrival_time
-	glass_timers["front"] = 0.0
-	glass_timers["left"]  = randf_range(0.0, glass_crack_interval * 0.5)
-	glass_timers["right"] = randf_range(0.0, glass_crack_interval * 0.5)
-	glass_timers["rear"]  = randf_range(0.0, glass_crack_interval * 0.3)
+	# stagger glass again on reset
+	glass_points["front"] = 0.0
+	glass_points["left"]  = randf_range(0.0, 50.0)
+	glass_points["right"] = randf_range(0.0, 50.0)
+	glass_points["rear"]  = randf_range(0.0, 30.0)

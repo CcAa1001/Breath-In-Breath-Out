@@ -21,8 +21,16 @@ var _heavy_breath_played: bool = false
 # -------------------------------------------------------
 var sounds: Dictionary = {
 	# breathing
-	"breath_start":    ["res://assets/Audio/breath_start.mp3"],
-	"breath_complete": ["res://assets/Audio/breath_complete.mp3"],
+	#"rubble": [
+	#"res://assets/Audio/metal.mp3",
+	#"res://assets/Audio/door.mp3",
+	#"res://assets/Audio/door2.mp3",
+	#"res://assets/Audio/glass.mp3",
+	#],
+	"talk": ["res://assets/Audio/talk.mp3", "res://assets/Audio/talk.wav"],
+	"rubble": ["res://assets/Audio/crash.mp3", "res://assets/Audio/metal.mp3",],
+	#"breath_start":    ["res://assets/Audio/breath_start.mp3"],
+	#"breath_complete": ["res://assets/Audio/breath_complete.mp3"],
 	"heavy_breath":    ["res://assets/Audio/freesound_community-heavy-breath-male-63980.mp3"],
 
 	# phone
@@ -59,9 +67,7 @@ var sounds: Dictionary = {
 	"cue1":            ["res://assets/Audio/cue1.mp3", "res://assets/Audio/cue1.wav"],
 	"cue2":            ["res://assets/Audio/cue2.mp3", "res://assets/Audio/cue2.wav"],
 }
-
 func _ready() -> void:
-	# find all players
 	music_player     = get_node_or_null("MusicPlayer")
 	sfx_player       = get_node_or_null("SFXPlayer")
 	breath_player    = get_node_or_null("BreathPlayer")
@@ -69,7 +75,6 @@ func _ready() -> void:
 	siren_player     = get_node_or_null("SirenPlayer")
 	groan_player     = get_node_or_null("GroanPlayer")
 
-	# connect game signals
 	GameManager.breath_prompt_show.connect(_on_breath_prompt)
 	GameManager.breath_taken.connect(_on_breath_taken)
 	GameManager.player_blacked_out.connect(_on_blackout)
@@ -83,12 +88,7 @@ func _ready() -> void:
 	GameManager.game_over.connect(_on_game_over)
 	GameManager.hammer_banged.connect(func(): play("honk"))
 
-	# randomise first groan
 	_reset_groan_timer()
-
-	# play heavy breath at game start
-	await get_tree().create_timer(0.5).timeout
-	play_heavy_breath()
 
 func _process(delta: float) -> void:
 	if not GameManager.game_running: return
@@ -234,9 +234,12 @@ func _on_escape_step(step: int) -> void:
 		3: play("glove_open") # glovebox opens
 
 func _on_cue_changed(cue: int) -> void:
+	print("Cue changed to: ", cue)
 	match cue:
 		1: play_on(music_player, "cue1", true)
-		2: play_on(music_player, "cue2", true)
+		2:
+			play_on(music_player, "cue2", true)
+			GameManager.show_dialogue("*rumbling above* — Something is happening!")
 
 func _on_game_won(ending: String) -> void:
 	stop_on(heartbeat_player)

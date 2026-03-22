@@ -1,12 +1,13 @@
 extends Node2D
 
-var darkness:     Node     = null
-var pov_manager:  Node     = null
-var camera:       Camera2D = null
-var shake_amount: float    = 0.0
-var tape_preview: Node     = null
-
-var panic_shake_amount: float  = 0.0
+var darkness:          Node     = null
+var pov_manager:       Node     = null
+var camera:            Camera2D = null
+var shake_amount:      float    = 0.0
+var tape_preview:      Node     = null
+var panic_shake_amount: float   = 0.0
+# FIX 5: lock prevents POV spam
+var is_switching_pov:  bool     = false
 
 func _ready() -> void:
 	GameManager.game_over.connect(_on_game_over)
@@ -17,10 +18,28 @@ func _ready() -> void:
 	GameManager.pov_switch_requested.connect(_switch_pov_with_fade)
 	GameManager.player_blacked_out.connect(_on_blackout)
 	GameManager.panic_shake.connect(_on_panic_shake)
+	# FIX 1: connect phone_dead to kill flashlight visual
+	GameManager.phone_dead.connect(_on_phone_dead)
 	
-	await get_tree().create_timer(1.0).timeout
-	var audio = get_node_or_null("AudioManager")
-	if audio: audio._on_cue_changed(1)
+	var intro    = find_child("IntroScreen",   true, false)
+	var tutorial = find_child("TutorialScreen", true, false)
+
+	if intro:
+		intro.show_intro(func():
+			if tutorial:
+				tutorial.show_tutorial(func():
+					# game starts — play heavy breath
+					var audio = get_node_or_null("AudioManager")
+					if audio: audio.play_heavy_breath()
+					var a2 = get_node_or_null("AudioManager")
+					if a2: a2._on_cue_changed(1))
+			else:
+				var audio = get_node_or_null("AudioManager")
+				if audio: audio.play_heavy_breath())
+	elif tutorial:
+		tutorial.show_tutorial(func():
+			var audio = get_node_or_null("AudioManager")
+			if audio: audio.play_heavy_breath())
 
 	darkness     = find_child("DarknessOverlay",      true, false)
 	pov_manager  = find_child("POVManager",           true, false)
@@ -33,55 +52,84 @@ func _ready() -> void:
 	else:            print("ERROR: POVManager missing")
 	if camera:       print("GameCamera OK")
 	else:            print("WARNING: GameCamera missing")
-	if tape_preview: print("TapePlacementPreview OK")
-	else:            print("WARNING: TapePlacementPreview missing")
 
+	# start cue 1
+	await get_tree().create_timer(1.0).timeout
+	var audio = get_node_or_null("AudioManager")
+	if audio: audio._on_cue_changed(1)
+func _start_intro() -> void:
+	var intro    = find_child("IntroScreen",    true, false)
+	var tutorial = find_child("TutorialScreen", true, false)
+
+	if intro:
+		intro.show_intro(func():
+			if tutorial:
+				tutorial.show_tutorial(func():
+					# heavy breath plays here — after tutorial, when game actually starts
+					var audio = get_node_or_null("AudioManager")
+					if audio:
+						audio.play_heavy_breath()
+						audio._on_cue_changed(1))
+			else:
+				var audio = get_node_or_null("AudioManager")
+				if audio:
+					audio.play_heavy_breath()
+					audio._on_cue_changed(1))
+	elif tutorial:
+		tutorial.show_tutorial(func():
+			var audio = get_node_or_null("AudioManager")
+			if audio:
+				audio.play_heavy_breath()
+				audio._on_cue_changed(1))
+				
 func _on_panic_shake(amount: float) -> void:
 	panic_shake_amount = amount
+
+# FIX 1: kill flashlight visual when phone dies
+func _on_phone_dead() -> void:
+	if darkness and darkness.has_method("toggle_light"):
+		if GameManager.flashlight_active == false:
+			darkness.toggle_light()
 
 func _process(delta: float) -> void:
 	if GameManager.is_dead: return
 
-	# panic shake — adds subtle random offset to camera
+	# panic shake
 	if panic_shake_amount > 0.0 and camera:
 		camera.offset += Vector2(
 			randf_range(-panic_shake_amount, panic_shake_amount),
 			randf_range(-panic_shake_amount, panic_shake_amount)) * delta * 10.0
-	elif shake_amount <= 0.0 and camera:
-		# only zero out if screen shake is also done
-		camera.offset = Vector2.ZERO
 
-	# ESC = back to main menu
-	if Input.is_action_just_pressed("ui_cancel"):
-		if GameManager.is_dead: return
-		GameManager.reset()
-		get_tree().change_scene_to_file("res://Scenes/start_screen.tscn")
-		
-	# SPACE = breathe
 	if Input.is_action_pressed("breathe"):
 		GameManager.hold_space(delta)
 	if Input.is_action_just_released("breathe"):
 		GameManager.release_space()
 
-
-	# E = car jack
 	if Input.is_action_pressed("use_jack"):
-		GameManager.hold_jack(delta)
+		var pov = str(pov_manager.get("current_pov")) if pov_manager else ""
+		if pov == "front" or pov == "":
+			GameManager.hold_jack(delta)
+		elif Input.is_action_just_pressed("use_jack"):
+			GameManager.show_dialogue("I need to be at the front door.")
 
-	# F = flashlight only
 	if Input.is_action_just_pressed("flashlight"):
 		_toggle_flashlight()
-
-	# P = phone
 	if Input.is_action_just_pressed("open_phone"):
 		_open_phone()
-
-	# M = master panel
 	if Input.is_action_just_pressed("toggle_panel"):
 		var panel = find_child("Panel", true, false)
 		if panel: panel.visible = !panel.visible
 
-	# screen shake from panic/events
+	# ESC — check tape first then go to menu
+	if Input.is_action_just_pressed("ui_cancel"):
+		if GameManager.is_dead: return
+		if tape_preview and tape_preview.get("active") == true:
+			tape_preview.deactivate()
+			GameManager.show_dialogue("Tape placement cancelled.")
+		else:
+			GameManager.reset()
+			get_tree().change_scene_to_file("res://Scenes/MainMenu.tscn")
+
 	if shake_amount > 0.0:
 		shake_amount = max(shake_amount - delta * 3.0, 0.0)
 		if camera:
@@ -94,18 +142,28 @@ func _process(delta: float) -> void:
 # -------------------------------------------------------
 # LEFT CLICK = use active item
 # -------------------------------------------------------
-func _input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent) -> void:
 	if GameManager.is_dead: return
 	if not event is InputEventMouseButton: return
 	if event.button_index != MOUSE_BUTTON_LEFT: return
 	if not event.pressed: return
+
+	# block if choice panel open
+	var choice_panel = get_node_or_null("UI/ChoicePanel")
+	if choice_panel and choice_panel.visible: return
+
+	# block if phone open
+	var phone = find_child("PhoneScreen", true, false)
+	if phone and phone.visible: return
 
 	var inv_ui = find_child("InventoryPanel", true, false)
 	if not inv_ui or not inv_ui.has_method("get_active_item"): return
 	var item = inv_ui.get_active_item()
 	if item == "": return
 
+	# consume immediately — nothing else fires after this
 	get_viewport().set_input_as_handled()
+
 	var world_pos = get_canvas_transform().affine_inverse() * event.position
 
 	match item:
@@ -116,10 +174,10 @@ func _input(event: InputEvent) -> void:
 		"shovel":           _use_shovel()
 		"emergency_number": _use_emergency_number()
 		"car_jack":
-			GameManager.show_dialogue("Hold E near the door to place the car jack.")
+			GameManager.show_dialogue("Hold E near the front door to use the jack.")
 		_:
 			GameManager.show_dialogue("Can't use " + item.replace("_", " ") + " here.")
-
+			
 # -------------------------------------------------------
 # TAPE PLACEMENT
 # -------------------------------------------------------
@@ -133,14 +191,10 @@ func _use_tape_at(world_pos: Vector2) -> void:
 		return
 
 	var crack_nodes = _get_crack_nodes()
-	var pov = str(pov_manager.get("current_pov")) if pov_manager else "front"
 
 	for crack_node in crack_nodes:
-		var node_path = str(crack_node.get_path())
-		var in_front  = node_path.contains("FrontRow")
-		var in_back   = node_path.contains("BackRow")
-		if in_front and pov != "front": continue
-		if in_back  and pov != "back":  continue
+		# ONLY check is_visible_in_tree — no pov string checks at all
+		if not crack_node.is_visible_in_tree(): continue
 
 		var rect = _get_crack_rect(crack_node)
 		if rect.has_point(world_pos):
@@ -160,13 +214,14 @@ func _use_tape_at(world_pos: Vector2) -> void:
 			return
 
 	GameManager.show_dialogue("Click on a cracked window area first.")
-
+	
 func _place_tape_at_preview() -> void:
 	if not tape_preview: return
 	var crack_nodes = _get_crack_nodes()
 
 	for crack_node in crack_nodes:
-		if not crack_node.visible: continue
+		# FIX 3: use is_visible_in_tree() to prevent cross-POV taping
+		if not crack_node.is_visible_in_tree(): continue
 		var rect = _get_crack_rect(crack_node)
 		if rect.has_point(tape_preview.global_position):
 			var wid   = crack_node.get("window_id")
@@ -223,20 +278,14 @@ func _use_cutter() -> void:
 		return
 	GameManager.cut_seatbelt()
 	var audio = get_node_or_null("AudioManager")
-	if audio: audio.play("seatbelt")
+	if audio: audio.play("cut")
 	_swap_front_seat_image()
 
 func _swap_front_seat_image() -> void:
 	var car_image = get_node_or_null("POVManager/FrontRow/CarImage")
-	if not car_image:
-		print("ERROR: FrontRow/CarImage not found!")
-		return
+	if not car_image: return
 	var tex = load("res://assets/front_seat_cut.png")
-	if not tex:
-		print("ERROR: front_seat_cut.png not found!")
-		return
-	car_image.texture = tex
-	print("Front seat image swapped!")
+	if tex: car_image.texture = tex
 
 func _use_screwdriver() -> void:
 	var pov = str(pov_manager.get("current_pov")) if pov_manager else ""
@@ -253,32 +302,40 @@ func _use_screwdriver() -> void:
 	GameManager.escape_step = max(GameManager.escape_step, 3)
 	GameManager.emit_signal("escape_step_changed", GameManager.escape_step)
 	var audio = get_node_or_null("AudioManager")
-	if audio: audio.play("glove_box")
+	if audio: audio.play("glove_open")
 	await get_tree().create_timer(0.8).timeout
 	GameManager.request_pov_switch("glovebox")
 
 func _use_hammer() -> void:
+	var inv_ui = find_child("InventoryPanel", true, false)
+	if inv_ui and inv_ui.has_method("deselect_all"):
+		inv_ui.deselect_all()
+
 	if GameManager.rescue_called:
 		GameManager.use_hammer_for_noise()
 	else:
 		GameManager.show_choice("Use the hammer?", [
-			"Bang on car for noise",
+			"Bang on car — signal rescue",
 			"Break a window (BAD IDEA)",
-			"Put it away"])
+			"Keep it for now"])
 
 func _use_shovel() -> void:
-	var pov = str(pov_manager.get("current_pov")) if pov_manager else ""
 	if not GameManager.jack_complete:
 		GameManager.show_dialogue("Force the door open first with the car jack.")
 		return
-	if pov != "trunk":
-		GameManager.show_dialogue("Go to the trunk to dig out.")
-		return
-	if not GameManager.cue_2_started:
-		GameManager.show_choice("The door is open. Dig out now?",
-			["Start digging!", "Wait and see"])
+
+	# deselect item so choice panel works cleanly
+	var inv_ui = find_child("InventoryPanel", true, false)
+	if inv_ui and inv_ui.has_method("deselect_all"):
+		inv_ui.deselect_all()
+
+	if not GameManager.cue_2_started and not GameManager.rescue_called:
+		GameManager.show_choice(
+			"The door is open. What do you do?",
+			["Start digging!", "Wait for rescue"])
 	else:
-		GameManager.show_choice("Rescue is coming. What do you do?",
+		GameManager.show_choice(
+			"Rescue is coming. What do you do?",
 			["Start digging!", "Wait for rescue instead"])
 
 func _use_emergency_number() -> void:
@@ -301,7 +358,7 @@ func _toggle_flashlight() -> void:
 	if darkness and GameManager.flashlight_active == turning_on:
 		darkness.toggle_light()
 	var audio = get_node_or_null("AudioManager")
-	if audio: audio.play_flashlight()
+	if audio: audio.play("flash")
 
 # -------------------------------------------------------
 # PHONE
@@ -317,7 +374,7 @@ func _open_phone() -> void:
 	if phone_ui:
 		phone_ui.open_phone()
 		var audio = get_node_or_null("AudioManager")
-		if audio: audio.play_phone_click()
+		if audio: audio.play("click")
 	else:
 		print("ERROR: PhoneScreen not found")
 
@@ -328,10 +385,12 @@ func trigger_shake(amount: float) -> void:
 	shake_amount = max(shake_amount, amount)
 
 # -------------------------------------------------------
-# POV FADE
+# POV FADE — FIX 5: lock prevents spam
 # -------------------------------------------------------
 func _switch_pov_with_fade(target: String) -> void:
-	if pov_manager == null: return
+	if pov_manager == null or is_switching_pov: return
+	is_switching_pov = true
+
 	var overlay = ColorRect.new()
 	overlay.color        = Color(0, 0, 0, 0)
 	overlay.size         = Vector2(1920, 1080)
@@ -347,6 +406,7 @@ func _switch_pov_with_fade(target: String) -> void:
 	tween2.tween_property(overlay, "color:a", 0.0, 0.3)
 	await tween2.finished
 	overlay.queue_free()
+	is_switching_pov = false
 
 # -------------------------------------------------------
 # SIGNALS
@@ -365,11 +425,10 @@ func _on_panic(value: float) -> void:
 		trigger_shake(randf_range(0.0, (value - 50.0) / 10.0))
 
 func _on_game_over(reason: String) -> void:
-	# force close phone if open
+	# force close phone
 	var phone_ui = find_child("PhoneScreen", true, false)
 	if phone_ui and phone_ui.visible:
 		phone_ui.hide()
-		# also kill click blocker
 		var blocker = phone_ui.get("click_blocker")
 		if blocker: blocker.visible = false
 
@@ -395,33 +454,51 @@ func _on_game_over(reason: String) -> void:
 				label.text = reason + "\n\nClick to try again"
 
 func _on_game_won(ending: String) -> void:
-	# force close phone if open
+	print("GAME WON: ", ending)
+	# force close phone
 	var phone_ui = find_child("PhoneScreen", true, false)
 	if phone_ui and phone_ui.visible:
 		phone_ui.hide()
 		var blocker = phone_ui.get("click_blocker")
 		if blocker: blocker.visible = false
 
+	# try multiple paths for the screen
 	var screen = get_node_or_null("UI/GameOverScreen")
+	if not screen: screen = find_child("GameOverScreen", true, false)
 	var label  = get_node_or_null("UI/GameOverScreen/ReasonLabel")
+	if not label: label = find_child("ReasonLabel", true, false)
 	var bg     = get_node_or_null("UI/GameOverScreen/EndingBG")
+	if not bg: bg = find_child("EndingBG", true, false)
+
+	print("Screen: ", screen != null, " Label: ", label != null, " BG: ", bg != null)
+
 	if screen: screen.show()
+
 	match ending:
 		"dig":
 			if bg and ResourceLoader.exists("res://assets/ending_dig.png"):
+				bg.texture  = load("res://assets/ending_dig.png")
+				bg.visible  = true
+				if label: label.visible = false
+			else:
+				print("ending_dig.png NOT FOUND at res://assets/ending_dig.png")
+				if label:
+					label.visible = true
+					label.text    = "You dug your way out!\n\nFresh air. You're free.\n\nClick to play again"
+		"rescue":
+			if bg and ResourceLoader.exists("res://assets/ending_dig.png"):
 				bg.texture = load("res://assets/ending_dig.png")
 				bg.visible = true
-			if label: label.visible = false
-		"rescue":
-			if bg: bg.visible = false
-			if label:
-				label.visible = true
-				label.text = "You survived until rescue!\n\nThe team broke through.\n\nClick to play again"
+				if label: label.visible = false
+			else:
+				if label:
+					label.visible = true
+					label.text    = "Rescue arrived!\n\nYou survived.\n\nClick to play again"
 		_:
 			if bg: bg.visible = false
 			if label:
 				label.visible = true
-				label.text = "You escaped!\n\nClick to play again"
+				label.text    = "You escaped!\n\nClick to play again"
 
 func _on_item_picked(_item: String) -> void:
 	_update_inventory()

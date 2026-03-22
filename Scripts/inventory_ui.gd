@@ -51,6 +51,8 @@ func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("slot_2"):
 		_toggle_slot(1)
 
+
+
 func _toggle_slot(slot: int) -> void:
 	if active_slot == slot:
 		# pressing same slot again = deselect
@@ -112,3 +114,11 @@ func _set_slot(panel: Panel, icon: TextureRect,
 		icon.modulate    = COLOR_NORMAL
 		label.text       = "[" + key_hint + "] " + item.replace("_", " ").to_upper()
 		label.modulate   = COLOR_ACTIVE if is_active else COLOR_NORMAL
+
+func deselect_all() -> void:
+	active_slot = -1
+	var slot1 = get_node_or_null("Slot1")
+	var slot2 = get_node_or_null("Slot2")
+	for slot in [slot1, slot2]:
+		if slot:
+			slot.remove_theme_stylebox_override("panel")
