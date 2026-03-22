@@ -236,10 +236,15 @@ func _on_escape_step(step: int) -> void:
 func _on_cue_changed(cue: int) -> void:
 	print("Cue changed to: ", cue)
 	match cue:
-		1: play_on(music_player, "cue1", true)
+		1:
+			play_on(music_player, "cue1", true)
 		2:
+			# stop cue1, start cue2
+			stop_on(music_player)
+			await get_tree().create_timer(0.3).timeout
 			play_on(music_player, "cue2", true)
-			GameManager.show_dialogue("*rumbling above* — Something is happening!")
+			# play metallic crack sound for the jack unlock moment
+			play("metal")
 
 func _on_game_won(ending: String) -> void:
 	stop_on(heartbeat_player)

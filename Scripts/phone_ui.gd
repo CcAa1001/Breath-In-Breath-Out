@@ -114,7 +114,15 @@ func _ready() -> void:
 	_build_articles()
 	_build_contacts()
 	_open_screen("home")
+	_fix_hidden_buttons(self)
 
+func _fix_hidden_buttons(node: Node) -> void:
+	for child in node.get_children():
+		if child is Button and not child.visible:
+			child.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		if child is BaseButton and not child.visible:
+			(child as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_fix_hidden_buttons(child)
 # -------------------------------------------------------
 # OPEN / CLOSE
 # -------------------------------------------------------
@@ -129,6 +137,7 @@ func open_phone() -> void:
 	if click_blocker:
 		click_blocker.visible = visible
 	if visible:
+		_fix_hidden_buttons(self)
 		_open_screen("home")
 		_update_time()
 		move_to_front()
@@ -431,16 +440,10 @@ func _call_contact(contact: Dictionary) -> void:
 		"emergency":
 			if GameManager.rescue_called:
 				if status_label:
-					status_label.text = "Already called. Rescue in " + \
-						str(int(GameManager.rescue_timer)) + "s"
+					status_label.text = "Already called. Rescue in " + str(int(GameManager.rescue_timer)) + "s"
 				return
 			_close_phone()
-			await get_tree().create_timer(0.3).timeout
-			var call_screen = get_node_or_null("/root/Main/UI/EmergencyCallScreen")
-			if call_screen:
-				call_screen.open_call()
-			else:
-				print("ERROR: EmergencyCallScreen not found")
+			GameManager.call_emergency()
 		"personal":
 			if status_label:
 				status_label.text = contact.get("note", "No signal underground.")

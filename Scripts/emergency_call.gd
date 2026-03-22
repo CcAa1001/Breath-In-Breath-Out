@@ -1,159 +1,100 @@
 extends Panel
 
-# nodes
-var operator_label:  Label
-var player_label:    Label
-var choice_container: VBoxContainer
-var call_status:     Label
-var transcript_box:  VBoxContainer
+var questions = [
+	{
+		"question": "Emergency services, what is your emergency?",
+		"answers":  ["I'm trapped in a car underground!", "Car accident", "I need help"],
+		"correct":  0
+	},
+	{
+		"question": "What road were you on?",
+		"answers":  ["Linden Street", "Main Street", "I don't know"],
+		"correct":  0
+	},
+	{
+		"question": "Are you injured?",
+		"answers":  ["No but I can't breathe much longer", "Yes badly", "I'm fine"],
+		"correct":  0
+	},
+	{
+		"question": "How long have you been trapped?",
+		"answers":  ["I don't know — please hurry!", "A few minutes", "An hour"],
+		"correct":  0
+	},
+	{
+		"question": "Stay on the line. We are dispatching rescue. Can you make noise?",
+		"answers":  ["Yes I have a hammer!", "No", "I'll try"],
+		"correct":  0
+	},
+]
 
-# state
-var current_step:     int  = 0
-var call_complete:    bool = false
-var wrong_attempts:   int  = 0
+var current_q:   int  = 0
+var wrong_count: int  = 0
+var _active:     bool = false
 
 func _ready() -> void:
-	hide()
-	operator_label   = get_node_or_null("OperatorLabel")
-	player_label     = get_node_or_null("PlayerLabel")
-	choice_container = get_node_or_null("ChoiceContainer")
-	call_status      = get_node_or_null("CallStatus")
-	transcript_box   = get_node_or_null("ScrollContainer/TranscriptBox")
+	visible      = false
+	mouse_filter = Control.MOUSE_FILTER_STOP
 
 func open_call() -> void:
-	if not GameManager.has_emergency_number:
-		GameManager.show_dialogue("I need the emergency number from the glove box.")
-		return
-	if GameManager.phone_is_dead:
-		GameManager.show_dialogue("My phone is dead. I can't call.")
-		return
-	if GameManager.rescue_called:
-		GameManager.show_dialogue("I already called. Help is coming.")
-		return
-	visible      = true
-	current_step = 0
-	wrong_attempts = 0
-	_clear_transcript()
-	_start_call()
+	current_q   = 0
+	wrong_count = 0
+	_active     = true
+	visible     = true
+	move_to_front()
+	_show_question(0)
 
-func _start_call() -> void:
-	if call_status: call_status.text = "📞 Connected to Emergency Services"
-	# play calling sound
-	var audio = get_node_or_null("/root/Main/AudioManager")
-	if audio: audio.play("phone_calling")
-	await get_tree().create_timer(2.0).timeout
-	_advance_dialogue()
-
-func _advance_dialogue() -> void:
-	if current_step >= PhoneContent.emergency_dialogue.size():
-		_end_call()
+func _show_question(idx: int) -> void:
+	var q_label       = get_node_or_null("QuestionLabel")
+	var btn_container = get_node_or_null("AnswerContainer")
+	if not q_label or not btn_container:
+		print("ERROR: EmergencyCallScreen missing QuestionLabel or AnswerContainer")
 		return
 
-	var step = PhoneContent.emergency_dialogue[current_step]
-
-	# show operator line
-	await _show_operator(step["text"])
-
-	# handle step type
-	match step["type"]:
-		"player_choice":
-			_show_choices(step)
-		"player_input":
-			# fixed player line — auto responds
-			await get_tree().create_timer(0.8).timeout
-			_show_player_line(step["player_line"])
-			await get_tree().create_timer(1.5).timeout
-			current_step += 1
-			_advance_dialogue()
-		"operator_only":
-			# no player response — just wait and continue
-			await get_tree().create_timer(2.0).timeout
-			current_step += 1
-			_advance_dialogue()
-
-func _show_operator(text: String) -> void:
-	await get_tree().create_timer(PhoneContent.operator_response_delay).timeout
-	if operator_label:
-		operator_label.text = "Operator: " + text
-	_add_transcript("Operator", text, Color(0.4, 0.8, 1.0))
-
-func _show_player_line(text: String) -> void:
-	if player_label:
-		player_label.text = "You: " + text
-	_add_transcript("You", text, Color(0.8, 1.0, 0.6))
-
-func _show_choices(step: Dictionary) -> void:
-	if not choice_container: return
-	# clear old buttons
-	for child in choice_container.get_children():
+	for child in btn_container.get_children():
 		child.queue_free()
 
-	for i in step["choices"].size():
-		var btn = Button.new()
-		btn.text = step["choices"][i]
-		btn.custom_minimum_size = Vector2(700, 44)
-		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		var idx = i
-		btn.pressed.connect(func(): _on_choice(step, idx))
-		choice_container.add_child(btn)
+	q_label.text = "Operator: " + questions[idx]["question"]
 
-func _on_choice(step: Dictionary, chosen_idx: int) -> void:
-	# clear buttons immediately
-	if choice_container:
-		for child in choice_container.get_children():
-			child.queue_free()
+	for i in questions[idx]["answers"].size():
+		var btn                   = Button.new()
+		btn.text                  = questions[idx]["answers"][i]
+		btn.custom_minimum_size   = Vector2(600, 50)
+		btn.mouse_filter          = Control.MOUSE_FILTER_STOP
+		var idx_copy              = i
+		btn.pressed.connect(func(): _on_answer(idx_copy))
+		btn_container.add_child(btn)
 
-	var chosen_text = step["choices"][chosen_idx]
-	_show_player_line(chosen_text)
-
-	if chosen_idx == step.get("correct", 0):
-		# correct answer — advance
-		await get_tree().create_timer(1.0).timeout
-		current_step += 1
-		_advance_dialogue()
+func _on_answer(answer_idx: int) -> void:
+	if not _active: return
+	if answer_idx == questions[current_q]["correct"]:
+		current_q += 1
+		if current_q >= questions.size():
+			_finish_call()
+		else:
+			_show_question(current_q)
 	else:
-		# wrong answer — operator repeats
-		wrong_attempts += 1
-		await get_tree().create_timer(0.8).timeout
-		var wrong_response = step.get("wrong_response",
-			"I'm sorry, could you repeat that?")
-		await _show_operator(wrong_response)
-		# show choices again
-		_show_choices(step)
+		wrong_count += 1
+		var q_label = get_node_or_null("QuestionLabel")
+		if q_label:
+			q_label.text = "Operator: I'm sorry, could you repeat that?\n" + \
+				questions[current_q]["question"]
 
-func _add_transcript(speaker: String, text: String, color: Color) -> void:
-	if not transcript_box: return
-	var lbl = Label.new()
-	lbl.text = "[" + speaker + "] " + text
-	lbl.add_theme_font_size_override("font_size", 12)
-	lbl.modulate = color
-	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	transcript_box.add_child(lbl)
-	var sep = HSeparator.new()
-	transcript_box.add_child(sep)
-
-func _clear_transcript() -> void:
-	if not transcript_box: return
-	for child in transcript_box.get_children():
-		child.queue_free()
-
-func _end_call() -> void:
-	if call_status:
-		call_status.text = "✓ Call ended. Help is on the way!"
-	if choice_container:
-		for child in choice_container.get_children():
+func _finish_call() -> void:
+	_active = false
+	var q_label       = get_node_or_null("QuestionLabel")
+	var btn_container = get_node_or_null("AnswerContainer")
+	if q_label:
+		q_label.text = "Operator: Help is on the way! Rescue in " + \
+			str(int(GameManager.rescue_arrival_time)) + " seconds!"
+	if btn_container:
+		for child in btn_container.get_children():
 			child.queue_free()
-
-	# trigger rescue
-	GameManager.call_emergency()
-	call_complete = true
-
 	await get_tree().create_timer(3.0).timeout
-	hide()
+	if not GameManager.is_dead:
+		visible = false
+		GameManager.call_emergency()
 
 func _input(event: InputEvent) -> void:
-	# allow closing with Escape if call is done
 	if not visible: return
-	if event is InputEventKey and event.pressed:
-		if event.keycode == KEY_ESCAPE and call_complete:
-			hide()
+	get_viewport().set_input_as_handled()

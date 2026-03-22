@@ -83,6 +83,12 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 
+	# block if emergency call open
+	var emergency = get_node_or_null("/root/Main/UI/EmergencyCallScreen")
+	if emergency and emergency.visible:
+		get_viewport().set_input_as_handled()
+		return
+
 	if GameManager.blacked_out:
 		GameManager.show_dialogue("Everything is going dark... hold Space!")
 		return
@@ -98,9 +104,9 @@ func _input(event: InputEvent) -> void:
 		return
 
 	# if item selected — don't consume, let main.gd _unhandled_input handle it
-	var inv_ui = get_node_or_null("/root/Main/UI/InventoryPanel")
-	if inv_ui and inv_ui.has_method("get_active_item"):
-		if inv_ui.get_active_item() != "":
+	var inv_panel = get_node_or_null("/root/Main/UI/InventoryPanel")
+	if inv_panel and inv_panel.has_method("get_active_item"):
+		if inv_panel.get_active_item() != "":
 			return
 
 	# no item selected — handle normally
@@ -171,7 +177,10 @@ func _handle_interaction() -> void:
 			elif GameManager.jack_placed:
 				GameManager.show_dialogue("Keep holding E.")
 			elif GameManager.has_item("car_jack"):
-				GameManager.show_dialogue("Hold E to place the jack.")
+				if not GameManager.cue_2_started:
+					GameManager.show_dialogue("Something feels wrong... I shouldn't force this yet.")
+				else:
+					GameManager.show_dialogue("Hold E to place the jack.")
 			else:
 				GameManager.show_dialogue("The door won't budge!")
 				var audio = get_node_or_null("/root/Main/AudioManager")
@@ -182,7 +191,7 @@ func _handle_interaction() -> void:
 				GameManager.has_emergency_number = true
 				GameManager.escape_step = max(GameManager.escape_step, 4)
 				GameManager.emit_signal("escape_step_changed", GameManager.escape_step)
-				GameManager.show_dialogue("An emergency number! I memorised it — 112. Call it on my phone.")
+				GameManager.show_dialogue("An emergency number! I memorised it — 112.")
 			else:
 				GameManager.show_dialogue("I already know the number — 112.")
 

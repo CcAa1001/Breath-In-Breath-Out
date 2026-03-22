@@ -28,10 +28,10 @@ signal cue_changed(cue: int)
 signal hammer_banged()
 
 # ---- MASTER SETTINGS ----
-var player_drain_rate: float    = 0.556
+var player_drain_rate: float    = 10
 var car_drain_rate: float       = 0.3
 var breath_cost: float          = 10.0
-var breath_hold_required: float = 1.5
+var breath_hold_required: float = 5
 var breath_cooldown_max: float  = 10.0
 var breath_restore: float       = 100.0
 var battery_drain_rate: float   = 0.833
@@ -115,6 +115,8 @@ var message_index: int               = 0
 var message_timers: Array[float]     = []
 var _message_pool: Array[Dictionary] = []
 
+
+var _jack_early_used: bool = false
 # -------------------------------------------------------
 # READY
 # -------------------------------------------------------
@@ -144,8 +146,11 @@ func _process(delta: float) -> void:
 	if not cue_2_started and game_elapsed >= cue_2_time:
 		cue_2_started = true
 		emit_signal("cue_changed", 2)
-		show_dialogue("*distant rumbling* — Something is happening above...")
+		show_dialogue("*CRACK* — Something shifted above. The pressure on the car changed... now's my chance!")
 
+
+	
+	
 	# passive breath drain
 	if not is_breathing:
 		player_o2 -= player_drain_rate * delta
@@ -287,9 +292,11 @@ func _on_glass_broken(window: String) -> void:
 		if glass_phases[w] < 4:
 			all_broken = false
 			break
+# in _on_glass_broken
 	if all_broken:
 		await get_tree().create_timer(2.0).timeout
-		_die_buried()
+		if not is_dead:  # guard
+			_die_buried()
 
 func apply_tape_to_window(window: String) -> void:
 	if not has_item("duct_tape"):
@@ -429,18 +436,28 @@ func _complete_breath() -> void:
 func hold_jack(delta: float) -> void:
 	if is_dead or not game_running or blacked_out: return
 	if jack_complete: return
+
+	# MUST wait for cue_2 before using jack
+	if not cue_2_started:
+		if not _jack_msg_shown:
+			show_dialogue("The door is jammed solid. I can't force it open yet...")
+			_jack_msg_shown = true
+		return
+
 	if not has_item("car_jack") and not jack_placed:
 		if not _jack_msg_shown:
 			show_dialogue("I need the car jack from the trunk.")
 			_jack_msg_shown = true
 		return
+
 	if not jack_placed:
 		jack_placed     = true
 		_jack_msg_shown = false
 		remove_item("car_jack")
-		show_dialogue("Jack placed! Keep holding E...")
+		show_dialogue("Jack placed! The structure is weakened — keep holding E!")
 		emit_signal("jack_progress_updated", 0.01)
 		return
+
 	jack_progress += delta
 	jack_progress  = min(jack_progress, jack_required)
 	emit_signal("jack_progress_updated", jack_progress / jack_required)
@@ -450,7 +467,7 @@ func hold_jack(delta: float) -> void:
 		show_dialogue("Rolling the jack... " + str(pct * 25) + "%")
 	if jack_progress >= jack_required:
 		jack_complete = true
-		show_dialogue("The door is giving way! Now I can escape!")
+		show_dialogue("The door bursts open! I can escape now!")
 		escape_step = max(escape_step, 6)
 		emit_signal("escape_step_changed", escape_step)
 		emit_signal("jack_progress_updated", 1.0)
@@ -548,11 +565,15 @@ func handle_choice(option: String) -> void:
 	print("Choice selected: ", option)
 	match option:
 		# --- SHOVEL ---
+# in game_manager.gd handle_choice
 		"Start digging!":
 			show_dialogue("I'm digging through the soil... almost there!")
-			game_running = false  # stop systems during win sequence
+			game_running = false
 			await get_tree().create_timer(2.0).timeout
-			_win("dig")
+			if not is_dead:  # guard against double-trigger
+				_win("dig")
+
+
 
 		"Wait and see", "Wait for rescue instead":
 			show_dialogue("I'll hold on... rescue is coming.")

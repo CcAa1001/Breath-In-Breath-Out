@@ -148,6 +148,12 @@ script = ExtResource("8_wsu2k")
 item_name = "phone"
 description = ""
 dialogue = "My phone! Press F for flashlight, P for messages."
+collectible = null
+pov_target = null
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/Phone" unique_id=1636748878]
 position = Vector2(1308.4784, 919.80505)
@@ -166,6 +172,12 @@ script = ExtResource("8_wsu2k")
 item_name = "cutter"
 description = "Can be use to cut the seatbealh which is jammed"
 dialogue = "Cutter! Maybe I can free myself."
+collectible = null
+pov_target = null
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/Cutter" unique_id=678492121]
 position = Vector2(316.34357, 980.12274)
@@ -181,8 +193,14 @@ texture = ExtResource("6_gt3je")
 [node name="Seatbelt" type="Area2D" parent="POVManager/FrontRow" unique_id=1883644071]
 script = ExtResource("8_wsu2k")
 item_name = "seatbelt"
+description = null
 dialogue = "I'm strapped in tight. The Seatbelt wont budge. I need something to cut it."
 collectible = false
+pov_target = null
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/Seatbelt" unique_id=1364260240]
 position = Vector2(320.00003, 757)
@@ -193,8 +211,14 @@ shape = SubResource("RectangleShape2D_hdf80")
 [node name="GloveBox" type="Area2D" parent="POVManager/FrontRow" unique_id=136395845]
 script = ExtResource("8_wsu2k")
 item_name = "glove_box"
+description = null
 dialogue = "It's locked. I need a tool."
 collectible = false
+pov_target = null
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/GloveBox" unique_id=848183566]
 position = Vector2(1324, 633)
@@ -206,6 +230,11 @@ item_name = "door"
 description = "It won't budge. Something is jamming it from outside."
 dialogue = "It won't move. The soil is pressing against it."
 collectible = false
+pov_target = null
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/LeftDoor" unique_id=1804453308]
 position = Vector2(155.3125, 862)
@@ -232,6 +261,11 @@ item_name = "door"
 description = "It won't budge. Something is jamming it from outside."
 dialogue = "It won't move. The soil is pressing against it."
 collectible = false
+pov_target = null
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/RightDoor" unique_id=1278351323]
 position = Vector2(1663.116, 798.5915)
@@ -241,8 +275,14 @@ shape = SubResource("RectangleShape2D_u50mg")
 [node name="SteeringWheel" type="Area2D" parent="POVManager/FrontRow" unique_id=1685833636]
 script = ExtResource("8_wsu2k")
 item_name = "steering_wheel"
+description = null
 dialogue = "Completely jammed. The car isn't going anywhere."
 collectible = false
+pov_target = null
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/SteeringWheel" unique_id=485265057]
 position = Vector2(644, 575)
@@ -251,8 +291,14 @@ shape = SubResource("CircleShape2D_gt3je")
 [node name="Honk" type="Area2D" parent="POVManager/FrontRow" unique_id=1526195094]
 script = ExtResource("8_wsu2k")
 item_name = "honk"
+description = null
 dialogue = "*HONK* — No one can hear me this deep underground..."
 collectible = false
+pov_target = null
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/Honk" unique_id=1535645380]
 z_index = 1
@@ -265,6 +311,8 @@ item_name = "center_console"
 description = "Some buttons and a USB port."
 dialogue = "The center console."
 collectible = false
+pov_target = null
+starts_hidden = null
 use_choice = true
 choice_prompt = "The center console. What do you check?"
 choice_options = Array[String](["Check the radio", "Search for anything useful", "Never mind"])
@@ -276,9 +324,14 @@ shape = SubResource("RectangleShape2D_5vw27")
 [node name="BackSeatAccess" type="Area2D" parent="POVManager/FrontRow" unique_id=388748199]
 script = ExtResource("8_wsu2k")
 item_name = "back_access"
+description = null
 dialogue = "Climb to the back seat."
 collectible = false
 pov_target = "back"
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/BackSeatAccess" unique_id=1841225075]
 position = Vector2(984.25, 927)
@@ -292,8 +345,14 @@ texture = ExtResource("8_gt3je")
 [node name="RearviewMirror" type="Area2D" parent="POVManager/FrontRow" unique_id=1274272076]
 script = ExtResource("8_wsu2k")
 item_name = "rearview_mirror"
+description = null
 dialogue = "Just darkness outside. We're buried deep."
 collectible = false
+pov_target = null
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/RearviewMirror" unique_id=109430242]
 position = Vector2(991.5, 331)
@@ -335,6 +394,12 @@ script = ExtResource("8_wsu2k")
 item_name = "duct_tape"
 description = "duct_tape"
 dialogue = "Duct tape! I can seal the cracked windows with this."
+collectible = null
+pov_target = null
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/GloveBoxView/DuctTape" unique_id=2109651441]
 position = Vector2(727, 672.5)
@@ -351,6 +416,11 @@ item_name = "emergency_number"
 description = "emergency_number"
 dialogue = "Ah, 112 I just remember i can call the cops with this number."
 collectible = false
+pov_target = null
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/GloveBoxView/EmergencyNumber" unique_id=211908491]
 position = Vector2(1115.5, 523)
@@ -364,9 +434,14 @@ texture = ExtResource("12_aqgau")
 [node name="BackBtn" type="Area2D" parent="POVManager/GloveBoxView" unique_id=106487381]
 script = ExtResource("8_wsu2k")
 item_name = ""
+description = null
 dialogue = "Go back to front seat."
 collectible = false
 pov_target = "front"
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/GloveBoxView/BackBtn" unique_id=197833523]
 position = Vector2(216.3104, 887.0901)
@@ -391,6 +466,12 @@ script = ExtResource("8_wsu2k")
 item_name = "screwdriver"
 description = "screwdriver"
 dialogue = "A screwdriver. I can use this on the glove box."
+collectible = null
+pov_target = null
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/BackRow/Screwdriver" unique_id=2058517105]
 position = Vector2(1398.397, 821.6729)
@@ -408,7 +489,12 @@ script = ExtResource("8_wsu2k")
 item_name = "hammer"
 description = "hammer"
 dialogue = "A hammer. I could use this to make noise... or break something."
-collectible = false
+collectible = null
+pov_target = null
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/BackRow/Hammer" unique_id=654214922]
 position = Vector2(761.50006, 700.5)
@@ -424,9 +510,14 @@ texture = ExtResource("13_kltya")
 [node name="FrontBtn" type="Area2D" parent="POVManager/BackRow" unique_id=2085324737]
 script = ExtResource("8_wsu2k")
 item_name = ""
+description = null
 dialogue = "Go Back to front seat"
 collectible = false
 pov_target = "front"
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/BackRow/FrontBtn" unique_id=177773040]
 position = Vector2(460, 853.99994)
@@ -442,9 +533,14 @@ texture = ExtResource("9_3pmx8")
 [node name="TrunkBtn" type="Area2D" parent="POVManager/BackRow" unique_id=799963964]
 script = ExtResource("8_wsu2k")
 item_name = "Trunk"
+description = null
 dialogue = "Check the trunk"
 collectible = false
 pov_target = "trunk"
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/BackRow/TrunkBtn" unique_id=1795719253]
 position = Vector2(1342, 256.00006)
@@ -475,7 +571,14 @@ texture = ExtResource("11_cbgmd")
 [node name="CarJack" type="Area2D" parent="POVManager/TrunkView" unique_id=1757548629]
 script = ExtResource("8_wsu2k")
 item_name = "car_jack"
+description = null
 dialogue = "A car jack! Hold E near the door to use it."
+collectible = null
+pov_target = null
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/TrunkView/CarJack" unique_id=1496800419]
 position = Vector2(786, 675.5)
@@ -489,7 +592,14 @@ texture = ExtResource("15_e08e2")
 [node name="Shovel" type="Area2D" parent="POVManager/TrunkView" unique_id=1949452399]
 script = ExtResource("8_wsu2k")
 item_name = "shovel"
+description = null
 dialogue = "A folding shovel. This is my way out!"
+collectible = null
+pov_target = null
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/TrunkView/Shovel" unique_id=1390133946]
 position = Vector2(1161, 723.5)
@@ -503,9 +613,15 @@ texture = ExtResource("7_ee4r6")
 
 [node name="BackBtn" type="Area2D" parent="POVManager/TrunkView" unique_id=912939163]
 script = ExtResource("8_wsu2k")
+item_name = null
+description = null
 dialogue = "Go back to back seat."
 collectible = false
 pov_target = "back"
+starts_hidden = null
+use_choice = null
+choice_prompt = null
+choice_options = null
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/TrunkView/BackBtn" unique_id=614227579]
 position = Vector2(976, 935)
@@ -654,7 +770,6 @@ modulate = Color(1, 1, 1, 0)
 self_modulate = Color(1, 1, 1, 0)
 custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
-mouse_filter = 2
 theme_override_font_sizes/font_size = 30
 
 [node name="NewsScreen" type="Control" parent="UI/PhoneScreen/HomeScreen" unique_id=822508411]
@@ -673,7 +788,6 @@ offset_left = 317.0
 offset_top = 627.0
 offset_right = 389.0
 offset_bottom = 681.0
-mouse_filter = 2
 
 [node name="ArticleList" type="VBoxContainer" parent="UI/PhoneScreen/HomeScreen/NewsScreen" unique_id=326829316]
 layout_mode = 0
@@ -707,7 +821,6 @@ offset_left = 313.0
 offset_top = 639.0
 offset_right = 391.0
 offset_bottom = 692.0
-mouse_filter = 2
 
 [node name="MomBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/MessageScreen" unique_id=674046657]
 modulate = Color(1, 1, 1, 0)
@@ -841,7 +954,6 @@ offset_left = 310.0
 offset_top = 550.0
 offset_right = 366.0
 offset_bottom = 597.0
-mouse_filter = 2
 
 [node name="StatusLabel" type="Label" parent="UI/PhoneScreen/HomeScreen/CallScreen" unique_id=1639526457]
 layout_mode = 0
@@ -859,7 +971,6 @@ offset_left = 306.0
 offset_top = 631.0
 offset_right = 392.0
 offset_bottom = 688.0
-mouse_filter = 2
 
 [node name="MsgJakeScreen" type="TextureRect" parent="UI/PhoneScreen/HomeScreen" unique_id=813149238]
 layout_mode = 0
@@ -887,7 +998,6 @@ offset_left = 262.0
 offset_top = 774.0
 offset_right = 336.0
 offset_bottom = 828.0
-mouse_filter = 2
 theme_override_font_sizes/font_size = 33
 
 [node name="HomeBtn" type="Button" parent="UI/PhoneScreen" unique_id=1954400402]
@@ -898,7 +1008,6 @@ offset_left = 376.0
 offset_top = 777.0
 offset_right = 450.0
 offset_bottom = 831.0
-mouse_filter = 2
 theme_override_font_sizes/font_size = 33
 
 [node name="ChoicePanel" type="Panel" parent="UI" unique_id=1781148109]
@@ -1142,7 +1251,6 @@ offset_left = 1773.0
 offset_top = 47.0
 offset_right = 1876.0
 offset_bottom = 138.0
-mouse_filter = 2
 
 [node name="IntroScreen" type="Control" parent="UI" unique_id=407497301]
 process_mode = 3

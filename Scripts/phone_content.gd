@@ -51,23 +51,8 @@ var news_articles: Array[Dictionary] = [
 var scheduled_messages: Array[Dictionary] = [
 	{
 		"sender":  "Mom",
-		"message": "Hey, are you coming for dinner tonight? 😊",
-		"time":    20.0,
-	},
-	{
-		"sender":  "Jake",
-		"message": "Dude where are you?? You were supposed to be here an hour ago",
-		"time":    45.0,
-	},
-	{
-		"sender":  "Mom",
 		"message": "You're not answering... is everything ok?",
 		"time":    75.0,
-	},
-	{
-		"sender":  "Mom",
-		"message": "I'm calling the police. Something is wrong. ❤️",
-		"time":    110.0,
 	},
 	{
 		"sender":  "Jake",
