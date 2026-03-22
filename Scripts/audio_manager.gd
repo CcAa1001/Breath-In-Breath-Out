@@ -1,221 +1,259 @@
 extends Node
 
-# ---- audio players ----
-var music:     AudioStreamPlayer
-var sfx:       AudioStreamPlayer
-var heartbeat: AudioStreamPlayer
-var creak:     AudioStreamPlayer
-var glass_sfx: AudioStreamPlayer
-var voice:     AudioStreamPlayer
+# -------------------------------------------------------
+# AUDIO PLAYERS — add these nodes under AudioManager in editor
+# -------------------------------------------------------
+var music_player:     AudioStreamPlayer  # looping ambient
+var sfx_player:       AudioStreamPlayer  # one-shot effects
+var breath_player:    AudioStreamPlayer  # breathing loop
+var heartbeat_player: AudioStreamPlayer  # heartbeat loop
+var siren_player:     AudioStreamPlayer  # siren with pitch/volume ramp
+var groan_player:     AudioStreamPlayer  # metallic groans
 
-# ---- sound map ----
+# siren state
+var siren_active:     bool  = false
+var _groan_timer:     float = 0.0
+var _groan_interval:  float = 0.0
+var _heavy_breath_played: bool = false
+
+# -------------------------------------------------------
+# SOUND MAP — auto detects mp3 or wav
+# -------------------------------------------------------
 var sounds: Dictionary = {
-	"breath_start":    "res://assets/audio/breath_start.mp3",
-	"breath_complete": "res://assets/audio/breath_complete.mp3",
-	"heartbeat":       "res://assets/audio/heartbeat.mp3",
-	"seatbelt":        "res://assets/audio/seatbelt.mp3",
-	"cut":             "res://assets/audio/cut.mp3",
-	"duct_tape":       "res://assets/audio/duct_tape.mp3",
-	"glove_box":       "res://assets/audio/glove_box.mp3",
-	"item_pickup":     "res://assets/audio/item_pickup.mp3",
-	"phone_pickup":    "res://assets/audio/phone_pickup.mp3",
-	"phone_click":     "res://assets/audio/phone_click.mp3",
-	"flashlight":      "res://assets/audio/flashlight.mp3",
-	"shovel":          "res://assets/audio/shovel.mp3",
-	"window_crack":    "res://assets/audio/window_crack.mp3",
-	"window_shatter":  "res://assets/audio/window_shatter.mp3",
-	"metal_screech":   "res://assets/audio/metal_screech.mp3",
-	"stone_first":     "res://assets/audio/stone_first.mp3",
-	"stone_second":    "res://assets/audio/stone_second.mp3",
-	"rock_fall":       "res://assets/audio/rock_fall.mp3",
-	"car_horn":        "res://assets/audio/honk.mp3",        # your file
-	"car_door":        "res://assets/audio/car_door.mp3",
-	"car_door_open":   "res://assets/audio/car_door_open.mp3",
-	"phone_calling":   "res://assets/audio/phone_calling.mp3",
-	"police_siren":    "res://assets/audio/police_siren.mp3",
-	"notification":    "res://assets/audio/notification.mp3",
-	"ambient":         "res://assets/audio/ambient.mp3",
-	"ambient_intense": "res://assets/audio/ambient_intense.mp3",
+	# breathing
+	"breath_start":    ["res://assets/Audio/breath_start.mp3"],
+	"breath_complete": ["res://assets/Audio/breath_complete.mp3"],
+	"heavy_breath":    ["res://assets/Audio/freesound_community-heavy-breath-male-63980.mp3"],
+
+	# phone
+	"click":           ["res://assets/Audio/click.mp3"],
+	"call":            ["res://assets/Audio/call.mp3"],
+	"phone_pickup":    ["res://assets/Audio/phone_pickup.mp3"],
+	"notification":    ["res://assets/Audio/notification.mp3", "res://assets/Audio/notification.wav"],
+
+	# items
+	"item_pickup":     ["res://assets/Audio/item_pickup.mp3"],
+	"cut":             ["res://assets/Audio/cut.mp3", "res://assets/Audio/Cut.wav"],
+	"seatbelt":        ["res://assets/Audio/seatbelt.mp3"],
+	"seatbelt_stuck":  ["res://assets/Audio/seatbelt.mp3"],
+	"flash":           ["res://assets/Audio/flash.mp3"],
+	"duct_tape":       ["res://assets/Audio/duct_tape.mp3", "res://assets/Audio/tape.mp3", "res://assets/Audio/tape.wav"],
+	"dig":             ["res://assets/Audio/dig.mp3"],
+
+	# car
+	"honk":            ["res://assets/Audio/honk.mp3"],
+	"door":            ["res://assets/Audio/door.mp3"],
+	"door_stuck":      ["res://assets/Audio/door2.mp3"],
+	"glove_open":      ["res://assets/Audio/glove_box.mp3"],
+	"glove_close":     ["res://assets/Audio/glove_box.mp3"],
+	"metal":           ["res://assets/Audio/metal.mp3"],
+
+	# glass
+	"glass":           ["res://assets/Audio/glass.mp3"],
+
+	# ambient/loops
+	"heartbeat":       ["res://assets/Audio/heartbeat.mp3"],
+	"sirene":          ["res://assets/Audio/sirene.mp3"],
+
+	# cues
+	"cue1":            ["res://assets/Audio/cue1.mp3", "res://assets/Audio/cue1.wav"],
+	"cue2":            ["res://assets/Audio/cue2.mp3", "res://assets/Audio/cue2.wav"],
 }
 
-var last_oxygen: float  = 100.0
-var heartbeat_playing: bool = false
-
 func _ready() -> void:
-	music     = get_node_or_null("/root/Main/MusicPlayer")
-	sfx       = get_node_or_null("/root/Main/SFXPlayer")
-	heartbeat = get_node_or_null("/root/Main/HeartbeatPlayer")
-	creak     = get_node_or_null("/root/Main/CreakPlayer")
-	glass_sfx = get_node_or_null("/root/Main/GlassPlayer")
-	voice     = get_node_or_null("/root/Main/VoicePlayer")
+	# find all players
+	music_player     = get_node_or_null("MusicPlayer")
+	sfx_player       = get_node_or_null("SFXPlayer")
+	breath_player    = get_node_or_null("BreathPlayer")
+	heartbeat_player = get_node_or_null("HeartbeatPlayer")
+	siren_player     = get_node_or_null("SirenPlayer")
+	groan_player     = get_node_or_null("GroanPlayer")
 
-	# start ambient music
-	_play_on(music, "ambient", true)
-
-	# connect all game events
-	GameManager.item_picked.connect(_on_item_picked)
-	GameManager.oxygen_updated.connect(_on_oxygen)
-	GameManager.glass_cracked.connect(_on_glass)
-	GameManager.escape_step_changed.connect(_on_escape_step)
-	GameManager.breath_progress.connect(_on_breath_progress)
+	# connect game signals
+	GameManager.breath_prompt_show.connect(_on_breath_prompt)
 	GameManager.breath_taken.connect(_on_breath_taken)
-	GameManager.rescue_timer_updated.connect(_on_rescue_timer)
-	GameManager.game_won.connect(_on_game_won)
-	GameManager.phone_message_received.connect(_on_message)
+	GameManager.player_blacked_out.connect(_on_blackout)
 	GameManager.panic_updated.connect(_on_panic)
+	GameManager.rescue_timer_updated.connect(_on_rescue_timer)
+	GameManager.glass_cracked.connect(_on_glass_crack)
+	GameManager.item_picked.connect(_on_item_picked)
+	GameManager.escape_step_changed.connect(_on_escape_step)
+	GameManager.cue_changed.connect(_on_cue_changed)
+	GameManager.game_won.connect(_on_game_won)
+	GameManager.game_over.connect(_on_game_over)
+	GameManager.hammer_banged.connect(func(): play("honk"))
+
+	# randomise first groan
+	_reset_groan_timer()
+
+	# play heavy breath at game start
+	await get_tree().create_timer(0.5).timeout
+	play_heavy_breath()
+
+func _process(delta: float) -> void:
+	if not GameManager.game_running: return
+
+	# metallic groan at random intervals
+	_groan_timer -= delta
+	if _groan_timer <= 0.0:
+		play_on(groan_player, "metal", false)
+		_reset_groan_timer()
+
+	# heartbeat pitch scales with panic
+	if heartbeat_player and heartbeat_player.playing:
+		var p = GameManager.panic
+		heartbeat_player.pitch_scale = remap(p, 0.0, 100.0, 0.8, 1.6)
+
+	# siren volume/pitch ramps as rescue timer counts down
+	if siren_active and siren_player and siren_player.playing:
+		var t = GameManager.rescue_timer
+		var total = GameManager.rescue_arrival_time
+		var progress = 1.0 - clamp(t / total, 0.0, 1.0)
+		# volume: starts at -30db (muffled) → 0db (clear)
+		siren_player.volume_db = lerpf(-30.0, 0.0, progress)
+		# pitch: slightly rises as it gets closer
+		siren_player.pitch_scale = lerpf(0.85, 1.0, progress)
 
 # -------------------------------------------------------
 # CORE PLAY FUNCTIONS
 # -------------------------------------------------------
-func play(sound_name: String) -> void:
-	_play_on(sfx, sound_name, false)
+func _load_sound(key: String) -> AudioStream:
+	if not sounds.has(key):
+		print("AudioManager: unknown sound: ", key)
+		return null
+	for path in sounds[key]:
+		if ResourceLoader.exists(path):
+			return load(path)
+	print("AudioManager: no file found for: ", key)
+	return null
 
-func _play_on(player: AudioStreamPlayer, sound_name: String, loop: bool) -> void:
-	if player == null: return
-	if not sounds.has(sound_name):
-		print("AudioManager: sound not found: ", sound_name)
-		return
-	var stream = load(sounds[sound_name])
-	if stream == null:
-		print("AudioManager: could not load: ", sounds[sound_name])
-		return
-	if loop:
-		if stream is AudioStreamMP3:
-			stream.loop = true
-		elif stream is AudioStreamOggVorbis:
-			stream.loop = true
-		elif stream is AudioStreamWAV:
-			stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+func play(key: String) -> void:
+	if not sfx_player: return
+	var stream = _load_sound(key)
+	if stream:
+		sfx_player.stream = stream
+		sfx_player.play()
+
+func play_on(player: AudioStreamPlayer, key: String, loop: bool) -> void:
+	if not player: return
+	var stream = _load_sound(key)
+	if not stream: return
+	if stream is AudioStreamMP3:
+		stream.loop = loop
+	elif stream is AudioStreamWAV:
+		stream.loop_mode = AudioStreamWAV.LOOP_FORWARD if loop else AudioStreamWAV.LOOP_DISABLED
 	player.stream = stream
 	player.play()
 
-# -------------------------------------------------------
-# ITEM SOUNDS
-# -------------------------------------------------------
-func _on_item_picked(item_name: String) -> void:
-	match item_name:
-		"phone":        _play_on(sfx, "phone_pickup",  false)
-		"cutter":       _play_on(sfx, "item_pickup",   false)
-		"duct_tape":    _play_on(sfx, "item_pickup",   false)
-		"screwdriver":  _play_on(sfx, "item_pickup",   false)
-		"hammer":       _play_on(sfx, "item_pickup",   false)
-		"car_jack":     _play_on(sfx, "item_pickup",   false)
-		"shovel":       _play_on(sfx, "item_pickup",   false)
-		"emergency_number": _play_on(sfx, "item_pickup", false)
-		_:              _play_on(sfx, "item_pickup",   false)
+func stop_on(player: AudioStreamPlayer) -> void:
+	if player and player.playing:
+		player.stop()
 
 # -------------------------------------------------------
-# BREATHING SOUNDS
+# NAMED PLAY FUNCTIONS — called from other scripts
 # -------------------------------------------------------
-func _on_breath_progress(amount: float) -> void:
-	# play breath start sound when breathing begins
-	if amount > 0.0 and amount < 0.1:
-		_play_on(voice, "breath_start", false)
+func play_phone_click() -> void:  play("click")
+func play_flashlight()  -> void:  play("flash")
+func play_honk()        -> void:  play("honk")
+func play_item_pickup() -> void:  play("item_pickup")
+func play_duct_tape()   -> void:  play("duct_tape")
+func play_dig()         -> void:  play("dig")
+func play_glass()       -> void:  play("glass")
+func play_notification() -> void: play("notification")
+func play_call()        -> void:  play("call")
+func play_door_stuck()  -> void:  play("door_stuck")
+func play_glove_open()  -> void:  play("glove_open")
+func play_glove_close() -> void:  play("glove_close")
+
+func play_heavy_breath() -> void:
+	if _heavy_breath_played: return
+	_heavy_breath_played = true
+	play_on(breath_player, "heavy_breath", false)
+
+func play_breath_start() -> void:
+	play_on(breath_player, "breath_start", false)
+
+func play_breath_complete() -> void:
+	play("breath_complete")
+	stop_on(breath_player)
+
+func _reset_groan_timer() -> void:
+	_groan_timer = randf_range(15.0, 45.0)
+
+# -------------------------------------------------------
+# SIGNAL HANDLERS
+# -------------------------------------------------------
+func _on_breath_prompt() -> void:
+	play_breath_start()
 
 func _on_breath_taken() -> void:
-	_play_on(voice, "breath_complete", false)
+	play_breath_complete()
 
-# -------------------------------------------------------
-# HEARTBEAT — speeds up as oxygen drops
-# -------------------------------------------------------
-func _on_oxygen(p_o2: float, _c: float) -> void:
-	last_oxygen = p_o2
-	if heartbeat == null: return
+func _on_blackout(is_out: bool) -> void:
+	if is_out:
+		_heavy_breath_played = false
+		play_heavy_breath()
 
-	if p_o2 > 60.0:
-		# safe — no heartbeat
-		if heartbeat.playing:
-			heartbeat.stop()
-			heartbeat_playing = false
-	elif p_o2 > 30.0:
-		# slow heartbeat
-		if not heartbeat.playing:
-			_play_on(heartbeat, "heartbeat", true)
-			heartbeat_playing = true
-		heartbeat.pitch_scale = 1.0
+func _on_panic(value: float) -> void:
+	if not heartbeat_player: return
+	if value >= 40.0:
+		if not heartbeat_player.playing:
+			play_on(heartbeat_player, "heartbeat", true)
 	else:
-		# fast panicked heartbeat
-		if not heartbeat.playing:
-			_play_on(heartbeat, "heartbeat", true)
-			heartbeat_playing = true
-		# pitch goes from 1.0 to 1.8 as o2 drops from 30 to 0
-		heartbeat.pitch_scale = lerp(1.0, 1.8, 1.0 - (p_o2 / 30.0))
+		stop_on(heartbeat_player)
 
-# -------------------------------------------------------
-# GLASS SOUNDS
-# -------------------------------------------------------
-func _on_glass(window_id: String, phase: int) -> void:
-	if glass_sfx == null: return
-	match phase:
-		1: _play_on(glass_sfx, "window_crack",   false)
-		2: _play_on(glass_sfx, "window_crack",   false)
-		3: _play_on(glass_sfx, "metal_screech",  false)
-		4: _play_on(glass_sfx, "window_shatter", false)
-		-1: _play_on(sfx, "duct_tape", false)  # taped
+func _on_rescue_timer(seconds_left: float) -> void:
+	if not siren_active and seconds_left <= GameManager.rescue_arrival_time:
+		siren_active = true
+		if siren_player:
+			siren_player.volume_db  = -30.0
+			siren_player.pitch_scale = 0.85
+			play_on(siren_player, "sirene", true)
 
-# -------------------------------------------------------
-# ESCAPE STEP SOUNDS
-# -------------------------------------------------------
+func _on_glass_crack(window_id: String, phase: int) -> void:
+	if phase > 0 and phase <= 4:
+		play("glass")
+	elif phase == -1:
+		play("duct_tape")
+
+func _on_item_picked(item_name: String) -> void:
+	match item_name:
+		"phone":
+			play("phone_pickup")
+		"cutter":
+			play("item_pickup")
+		"screwdriver", "hammer", "car_jack", "shovel", \
+		"duct_tape", "emergency_number":
+			play("item_pickup")
+		_:
+			play("item_pickup")
+
 func _on_escape_step(step: int) -> void:
 	match step:
-		1: _play_on(sfx, "seatbelt",     false)  # seatbelt cut
-		2: _play_on(sfx, "item_pickup",  false)  # screwdriver
-		3: _play_on(sfx, "glove_box",    false)  # glove box opened
-		5: _play_on(sfx, "phone_calling",false)  # emergency called
-		6: _play_on(sfx, "car_door_open",false)  # door forced open
+		1: play("cut")        # seatbelt cut
+		3: play("glove_open") # glovebox opens
 
-# -------------------------------------------------------
-# RESCUE TIMER SOUNDS
-# -------------------------------------------------------
-func _on_rescue_timer(seconds_left: float) -> void:
-	# play siren when rescue is very close
-	if seconds_left <= 10.0 and sfx and not sfx.playing:
-		_play_on(sfx, "police_siren", false)
+func _on_cue_changed(cue: int) -> void:
+	match cue:
+		1: play_on(music_player, "cue1", true)
+		2: play_on(music_player, "cue2", true)
 
 func _on_game_won(ending: String) -> void:
-	if heartbeat: heartbeat.stop()
-	if music: music.stop()
-	match ending:
-		"rescue": _play_on(sfx, "police_siren", false)
-		"dig":    _play_on(sfx, "shovel",       false)
+	stop_on(heartbeat_player)
+	stop_on(siren_player)
+	if ending == "dig": play("dig")
+
+func _on_game_over(_reason: String) -> void:
+	stop_on(heartbeat_player)
+	stop_on(siren_player)
+	stop_on(breath_player)
+	stop_on(music_player)
 
 # -------------------------------------------------------
-# PHONE SOUNDS
+# CALLED FROM CLICKABLE_ITEM / MAIN
 # -------------------------------------------------------
-func _on_message(_sender: String, _msg: String) -> void:
-	_play_on(sfx, "notification", false)
+func play_seatbelt_stuck() -> void:
+	play("seatbelt_stuck")
 
-# -------------------------------------------------------
-# PANIC — switch music intensity
-# -------------------------------------------------------
-func _on_panic(value: float) -> void:
-	if music == null: return
-	if value > 70.0:
-		# switch to intense music if not already playing
-		if music.stream and music.stream.resource_path.contains("ambient_intense"):
-			return
-		_play_on(music, "ambient_intense", true)
-	else:
-		if music.stream and music.stream.resource_path.contains("ambient."):
-			return
-		_play_on(music, "ambient", true)
-
-# -------------------------------------------------------
-# CALLED FROM OTHER SCRIPTS
-# -------------------------------------------------------
-func play_honk() -> void:
-	_play_on(sfx, "car_horn", false)
-
-func play_flashlight() -> void:
-	_play_on(sfx, "flashlight", false)
-
-func play_phone_click() -> void:
-	_play_on(sfx, "phone_click", false)
-
-func play_door() -> void:
-	_play_on(sfx, "car_door", false)
-
-func play_stone() -> void:
-	var stones = ["stone_first", "stone_second", "rock_fall"]
-	var pick = stones[randi() % stones.size()]
-	_play_on(creak, pick, false)
+func play_door_wont_budge() -> void:
+	play("door_stuck")

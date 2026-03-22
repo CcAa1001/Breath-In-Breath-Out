@@ -23,17 +23,20 @@ signal rescue_timer_updated(seconds_left: float)
 signal game_won(ending: String)
 signal phone_dead()
 signal jack_progress_updated(amount: float)
+signal panic_shake(amount: float)
+signal cue_changed(cue: int)
+signal hammer_banged()
 
 # ---- MASTER SETTINGS ----
-var player_drain_rate: float    = 0.556
-var car_drain_rate: float       = 0.3
+var player_drain_rate: float    = 10.0
+var car_drain_rate: float       = 0.0
 var breath_cost: float          = 10.0
 var breath_hold_required: float = 1.5
-var breath_cooldown_max: float  = 10.0
+var breath_cooldown_max: float  = 5.0
 var breath_restore: float       = 100.0
 var battery_drain_rate: float   = 0.833
 var panic_build_rate: float     = 5.0
-var panic_decay_rate: float     = 2.0
+var panic_decay_rate: float     = 1.5
 var blackout_death_time: float  = 5.0
 var glass_crack_interval: float = 30.0
 var glass_fill_rate: float      = 100.0 / 30.0
@@ -62,7 +65,7 @@ var soil_multiplier: float = 1.0
 # seatbelt
 var seatbelt_cut: bool = false
 
-# glass — pressure based system
+# glass
 var glass_points:     Dictionary = {"front": 0.0,  "left": 0.0,  "right": 0.0,  "rear": 0.0}
 var glass_phases:     Dictionary = {"front": 0,    "left": 0,    "right": 0,    "rear": 0}
 var glass_taped:      Dictionary = {"front": false, "left": false, "right": false, "rear": false}
@@ -94,6 +97,13 @@ var phone_collected: bool     = false
 # state
 var game_running: bool = true
 var is_dead: bool      = false
+var honk_broken: bool  = false
+
+# cue system
+var current_cue: int    = 1
+var game_elapsed: float = 0.0
+var cue_2_started: bool = false
+var cue_2_time: float   = 120.0
 
 # phone messages
 var messages: Array[Dictionary]      = []
@@ -123,13 +133,24 @@ func _process(delta: float) -> void:
 	if not game_running or is_dead:
 		return
 
+	# cue timer
+	game_elapsed += delta
+	if not cue_2_started and game_elapsed >= cue_2_time:
+		cue_2_started = true
+		emit_signal("cue_changed", 2)
+		show_dialogue("*distant rumbling* — Something is happening above...")
+
+	# passive breath drain
 	if not is_breathing:
 		player_o2 -= player_drain_rate * delta
+
+	# passive car drain
 	car_o2 -= car_drain_rate * delta * soil_multiplier
 	player_o2 = clamp(player_o2, 0.0, 100.0)
 	car_o2    = clamp(car_o2,    0.0, 100.0)
 	emit_signal("oxygen_updated", player_o2, car_o2)
 
+	# blackout
 	if player_o2 <= 0.0 and not blacked_out:
 		blacked_out    = true
 		blackout_timer = 0.0
@@ -138,12 +159,19 @@ func _process(delta: float) -> void:
 	if blacked_out:
 		blackout_timer += delta
 		if blackout_timer >= blackout_death_time:
-			_die("You couldn't breathe in time...")
+			_die_suffocated()
+			return
 		if player_o2 > 5.0:
 			blacked_out    = false
 			blackout_timer = 0.0
 			emit_signal("player_blacked_out", false)
 
+	# car air empty
+	if car_o2 <= 0.0:
+		_die_suffocated()
+		return
+
+	# battery
 	if flashlight_active:
 		battery -= battery_drain_rate * delta
 		battery  = clamp(battery, 0.0, 100.0)
@@ -156,14 +184,33 @@ func _process(delta: float) -> void:
 			emit_signal("phone_dead")
 			show_dialogue("My phone battery died. Complete darkness.")
 
-	var both_critical = player_o2 < 30.0 and car_o2 < 30.0
-	panic += (panic_build_rate if both_critical else -panic_decay_rate) * delta
-	panic  = clamp(panic, 0.0, 100.0)
+	# panic meter
+	var panic_delta: float = 0.0
+	if player_o2 < 30.0:    panic_delta += 4.0 * delta
+	if car_o2 < 30.0:       panic_delta += 3.0 * delta
+	if blacked_out:          panic_delta += 8.0 * delta
+	for w in glass_phases.keys():
+		if glass_phases[w] >= 3: panic_delta += 1.0 * delta
+	if player_o2 > 70.0:    panic_delta -= panic_decay_rate * delta
+	if rescue_called:        panic_delta -= 1.0 * delta
+	panic = clamp(panic + panic_delta, 0.0, 100.0)
 	emit_signal("panic_updated", panic)
 
+	# panic shake signal — starts at 50 panic
+	if panic >= 50.0:
+		var shake_intensity = remap(panic, 50.0, 100.0, 0.0, 8.0)
+		emit_signal("panic_shake", shake_intensity)
+
+	# extra O2 drain at high panic
+	if panic >= 70.0:
+		player_o2 -= 0.5 * delta
+		player_o2 = clamp(player_o2, 0.0, 100.0)
+
+	# breath cooldown
 	if breath_cooldown > 0.0:
 		breath_cooldown -= delta
 
+	# breath prompt
 	if player_o2 < 40.0 and breath_cooldown <= 0.0:
 		if not prompt_active:
 			prompt_active = true
@@ -189,11 +236,8 @@ func _process(delta: float) -> void:
 			show_dialogue("📱 " + msg["sender"] + ": " + msg["message"])
 			message_index += 1
 
-	if car_o2 <= 0.0:
-		_die("The air in the car ran out...")
-
 # -------------------------------------------------------
-# GLASS — pressure system (ONE copy only)
+# GLASS
 # -------------------------------------------------------
 func _get_tape_reduction(count: int) -> float:
 	match count:
@@ -229,6 +273,14 @@ func _on_glass_broken(window: String) -> void:
 	soil_multiplier += 0.5
 	emit_signal("soil_speed_changed", soil_multiplier)
 	emit_signal("glass_cracked", window, 4)
+	var all_broken = true
+	for w in glass_phases.keys():
+		if glass_phases[w] < 4:
+			all_broken = false
+			break
+	if all_broken:
+		await get_tree().create_timer(2.0).timeout
+		_die_buried()
 
 func apply_tape_to_window(window: String) -> void:
 	if not has_item("duct_tape"):
@@ -243,21 +295,17 @@ func apply_tape_to_window(window: String) -> void:
 	if duct_tape_uses <= 0:
 		show_dialogue("I'm out of duct tape!")
 		return
-
 	glass_tape_count[window] += 1
 	glass_taped[window]       = true
 	duct_tape_uses            -= 1
-
 	var pct_slow = 0
 	match glass_tape_count[window]:
 		1: pct_slow = 60
 		2: pct_slow = 40
 		_: pct_slow = 20
-
 	show_dialogue("Tape on " + window + " window. +" + str(pct_slow) +
 		"% slower. " + str(duct_tape_uses) + " strips left.")
 	emit_signal("glass_cracked", window, -1)
-
 	if duct_tape_uses <= 0:
 		remove_item("duct_tape")
 		show_dialogue("Used the last tape strip!")
@@ -272,6 +320,11 @@ func apply_duct_tape() -> void:
 # RESCUE
 # -------------------------------------------------------
 func call_emergency() -> void:
+	print("call_emergency called")
+	print("phone_collected: ", phone_collected)
+	print("phone_is_dead: ", phone_is_dead)
+	print("has_emergency_number: ", has_emergency_number)
+	print("rescue_called: ", rescue_called)
 	if not phone_collected:
 		show_dialogue("I need my phone.")
 		return
@@ -286,6 +339,7 @@ func call_emergency() -> void:
 		return
 	rescue_called = true
 	rescue_timer  = rescue_arrival_time
+	current_cue   = 2
 	show_dialogue("I got through! They're coming in " + str(int(rescue_arrival_time)) + "s!")
 	escape_step = max(escape_step, 5)
 	emit_signal("escape_step_changed", escape_step)
@@ -299,10 +353,15 @@ func use_hammer_for_noise() -> void:
 		return
 	rescue_timer = max(rescue_timer - 20.0, 1.0)
 	show_dialogue("*BANG BANG BANG* — " + str(int(rescue_timer)) + "s until rescue!")
+	emit_signal("hammer_banged")
 
 func use_hammer_on_glass() -> void:
 	show_choice("Break the window with the hammer?",
 		["Yes — smash it!", "No, that's a bad idea"])
+
+func trigger_buried_ending() -> void:
+	if is_dead: return
+	_die_buried()
 
 # -------------------------------------------------------
 # SEATBELT
@@ -402,6 +461,12 @@ func _die(reason: String) -> void:
 	game_running = false
 	emit_signal("game_over", reason)
 
+func _die_suffocated() -> void:
+	_die("suffocated")
+
+func _die_buried() -> void:
+	_die("buried")
+
 # -------------------------------------------------------
 # INVENTORY
 # -------------------------------------------------------
@@ -468,6 +533,8 @@ func reset() -> void:
 	jack_progress = 0.0; jack_complete = false; jack_placed = false
 	_jack_msg_shown = false; escape_step = 0
 	duct_tape_uses = 6; phone_collected = false
+	current_cue = 1; game_elapsed = 0.0; cue_2_started = false
+	honk_broken = false
 	for w in glass_points.keys():
 		glass_points[w]     = 0.0
 		glass_phases[w]     = 0

@@ -79,17 +79,23 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if not GameManager.game_running: return
 
-	# player oxygen bar
+	if player_bar: player_bar.set("value", GameManager.player_o2)
+	if car_bar:    car_bar.set("value",    GameManager.car_o2)
+
+	# red vignette when car O2 is low
+	var red_overlay = find_child("HeartbeatOverlay", true, false)
+	if red_overlay:
+		var car_danger = clamp(1.0 - (GameManager.car_o2 / 30.0), 0.0, 1.0)
+		red_overlay.modulate = Color(1, 0.1, 0.1,
+			clamp(car_danger * 0.5 + GameManager.panic / 300.0, 0.0, 0.6))
+
+	# color updates
 	if player_bar:
-		player_bar.set("value", GameManager.player_o2)
 		var p = GameManager.player_o2
 		if p > 60.0:   player_bar.modulate = Color.WHITE
 		elif p > 30.0: player_bar.modulate = Color(1, 0.7, 0)
 		else:          player_bar.modulate = Color(1, 0.2, 0.2)
-
-	# car oxygen bar
 	if car_bar:
-		car_bar.set("value", GameManager.car_o2)
 		var c = GameManager.car_o2
 		if c > 50.0:   car_bar.modulate = Color(0.4, 0.85, 1.0)
 		elif c > 25.0: car_bar.modulate = Color(1, 0.7, 0)
@@ -101,8 +107,12 @@ func _process(_delta: float) -> void:
 func _on_panic(value: float) -> void:
 	if not panic_bar: return
 	panic_bar.set("value", value)
-	if value > 70.0:
-		panic_bar.position.x = 30 + randf_range(-2, 2)
+
+	# red screen overlay when car O2 low
+	var red = find_child("HeartbeatOverlay", true, false)
+	if red:
+		red.modulate = Color(1, 0, 0, clamp(value / 200.0, 0.0, 0.4))
+
 
 # -------------------------------------------------------
 # BLACKOUT
@@ -226,14 +236,17 @@ func _on_choice_selected(option: String) -> void:
 	match option:
 		"Start digging!":
 			if GameManager.has_item("shovel") and GameManager.jack_complete:
-				GameManager.show_dialogue("Digging... almost there...")
+				GameManager.show_dialogue("Digging frantically upward...")
 				await get_tree().create_timer(3.0).timeout
 				GameManager._win("dig")
 			else:
 				GameManager.show_dialogue("I need the shovel and car jack first.")
 
+		"Wait and see":
+			GameManager.show_dialogue("I'll wait... hopefully the right choice.")
+
 		"Wait for rescue instead":
-			GameManager.show_dialogue("I'll hold on. They're coming.")
+			GameManager.show_dialogue("Help is coming. Just hold on a little longer.")
 
 		"Bang on the car for rescue", "Bang for rescue":
 			GameManager.use_hammer_for_noise()
@@ -284,6 +297,11 @@ func _on_choice_selected(option: String) -> void:
 
 		"Rest for a moment":
 			GameManager.show_dialogue("I can't rest. I need to get out of here.")
+			
+		"Dig — I'll take my chances":
+			GameManager.show_dialogue("Digging frantically... the soil collapses in!")
+			await get_tree().create_timer(2.0).timeout
+			GameManager._die("The soil caved in. You were buried alive.")
 
 		_:
 			GameManager.show_dialogue("...")
@@ -303,18 +321,39 @@ func _on_rescue_timer(seconds_left: float) -> void:
 func _on_game_over(reason: String) -> void:
 	var screen = find_child("GameOverScreen", true, false)
 	var label  = find_child("ReasonLabel",    true, false)
+	var bg     = find_child("EndingBG",       true, false)
 	if screen: screen.show()
-	if label:  label.text = reason + "\n\nClick to restart"
+	match reason:
+		"suffocated":
+			if bg and ResourceLoader.exists("res://assets/ending_suffocated.png"):
+				bg.texture = load("res://assets/ending_suffocated.png")
+				bg.visible = true
+			if label: label.visible = false
+		"buried":
+			if bg and ResourceLoader.exists("res://assets/ending_buried.png"):
+				bg.texture = load("res://assets/ending_buried.png")
+				bg.visible = true
+			if label: label.visible = false
+		_:
+			if bg: bg.visible = false
+			if label:
+				label.visible = true
+				label.text = reason + "\n\nClick to try again"
 
 func _on_game_won(ending: String) -> void:
 	var screen = find_child("GameOverScreen", true, false)
 	var label  = find_child("ReasonLabel",    true, false)
+	var bg     = find_child("EndingBG",       true, false)
 	if screen: screen.show()
-	if label:
-		match ending:
-			"rescue":
-				label.text = "You survived until rescue!\n\nThe team broke through. You made it out alive.\n\nClick to play again"
-			"dig":
-				label.text = "You dug your way out!\n\nFresh air. You're free.\n\nClick to play again"
-			_:
-				label.text = "You escaped!\n\nClick to play again"
+
+	match ending:
+		"dig":
+			if bg:
+				bg.texture = load("res://assets/ending_dig.png")
+				bg.visible = true
+			if label: label.text = ""
+		"rescue":
+			if label:
+				label.text = "You survived until rescue!\n\nThe team broke through. You made it out.\n\nClick to play again"
+		_:
+			if label: label.text = "You escaped!\n\nClick to play again"

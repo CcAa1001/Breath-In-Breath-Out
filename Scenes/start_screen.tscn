@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://2chrapt4bnif"]
+
+[ext_resource type="Script" uid="uid://xe3fuoqk7ucb" path="res://Scripts/start_screen.gd" id="1_ainjc"]
+[ext_resource type="Texture2D" uid="uid://d0enlhp6hn7hr" path="res://assets/title_screen.png" id="1_i8r30"]
+[ext_resource type="Texture2D" uid="uid://ciiof6t0ci8d8" path="res://assets/credit.png" id="3_60ddj"]
+
+[node name="StartScreen" type="CanvasLayer" unique_id=458356217]
+script = ExtResource("1_ainjc")
+
+[node name="BG" type="TextureRect" parent="." unique_id=1341549174]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_i8r30")
+expand_mode = 3
+
+[node name="MenuContainer" type="VBoxContainer" parent="." unique_id=753364126]
+self_modulate = Color(1, 1, 1, 0)
+offset_left = 791.0
+offset_top = 581.0
+offset_right = 1145.0
+offset_bottom = 936.0
+theme_override_constants/separation = 22
+
+[node name="PlayBtn" type="Button" parent="MenuContainer" unique_id=1015697621]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+custom_minimum_size = Vector2(55, 100)
+layout_mode = 2
+
+[node name="CreditBtn" type="Button" parent="MenuContainer" unique_id=1117616989]
+modulate = Color(1, 1, 1, 0)
+custom_minimum_size = Vector2(55, 100)
+layout_mode = 2
+
+[node name="ExitBtn" type="Button" parent="MenuContainer" unique_id=1132107039]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+custom_minimum_size = Vector2(55, 100)
+layout_mode = 2
+
+[node name="Credit" type="TextureRect" parent="." unique_id=755795791]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_60ddj")
+
+[node name="CloseBtn" type="Button" parent="Credit" unique_id=1276577305]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = 899.0
+offset_top = 874.0
+offset_right = 1060.0
+offset_bottom = 987.0

@@ -136,10 +136,13 @@ func _on_collected() -> void:
 		"duct_tape":
 			GameManager.show_dialogue("Duct tape! Select it then left click on a crack.")
 		"emergency_number":
-			GameManager.has_emergency_number = true
-			GameManager.show_dialogue("An emergency number! Call 112 on my phone.")
-			GameManager.escape_step = max(GameManager.escape_step, 4)
-			GameManager.emit_signal("escape_step_changed", GameManager.escape_step)
+			if not GameManager.has_emergency_number:
+				GameManager.has_emergency_number = true
+				GameManager.escape_step = max(GameManager.escape_step, 4)
+				GameManager.emit_signal("escape_step_changed", GameManager.escape_step)
+				GameManager.show_dialogue("An emergency number! I memorised it — 112. Call it on my phone.")
+			else:
+				GameManager.show_dialogue("I already know the number — 112.")
 		"hammer":
 			GameManager.show_dialogue("A hammer! Select it then left click to use.")
 		"car_jack":
@@ -149,16 +152,41 @@ func _on_collected() -> void:
 			GameManager.escape_step = max(GameManager.escape_step, 6)
 			GameManager.emit_signal("escape_step_changed", GameManager.escape_step)
 
+
 func _handle_interaction() -> void:
 	match item_name:
 		"seatbelt":
 			if GameManager.seatbelt_cut:
-				GameManager.show_dialogue("The seatbelt is already cut.")
+				GameManager.show_dialogue("Already cut.")
 			elif GameManager.has_item("cutter"):
-				GameManager.show_dialogue("Select the cutter (1 or 2) then left click.")
+				GameManager.show_dialogue("Select cutter then left click.")
 			else:
-				GameManager.show_dialogue("I'm strapped in. I need something sharp.")
-
+				GameManager.show_dialogue("I'm strapped in tight.")
+				var audio = get_node_or_null("/root/Main/AudioManager")
+				if audio: audio.play_seatbelt_stuck()
+		"door":
+			if GameManager.jack_complete:
+				GameManager.show_dialogue("The door is forced open!")
+			elif GameManager.jack_placed:
+				GameManager.show_dialogue("Keep holding E.")
+			elif GameManager.has_item("car_jack"):
+				GameManager.show_dialogue("Hold E to place the jack.")
+			else:
+				GameManager.show_dialogue("The door won't budge!")
+				var audio = get_node_or_null("/root/Main/AudioManager")
+				if audio: audio.play_door_wont_budge()
+				
+		"emergency_number":
+			print("Emergency number clicked! Current has_number: ", GameManager.has_emergency_number)
+			if not GameManager.has_emergency_number:
+				GameManager.has_emergency_number = true
+				GameManager.escape_step = max(GameManager.escape_step, 4)
+				GameManager.emit_signal("escape_step_changed", GameManager.escape_step)
+				GameManager.show_dialogue("An emergency number! I memorised it — 112. Call it on my phone.")
+				print("has_emergency_number is now TRUE")
+			else:
+				GameManager.show_dialogue("I already know the number — 112.")
+				
 		"glove_box":
 			if GameManager.escape_step >= 3:
 				GameManager.request_pov_switch("glovebox")
@@ -166,17 +194,7 @@ func _handle_interaction() -> void:
 				GameManager.show_dialogue("Select the screwdriver (1 or 2) then left click.")
 			else:
 				GameManager.show_dialogue("It's locked. I need a tool.")
-
-		"door":
-			if GameManager.jack_complete:
-				GameManager.show_dialogue("The door is forced open!")
-			elif GameManager.jack_placed:
-				GameManager.show_dialogue("Keep holding E to roll the jack.")
-			elif GameManager.has_item("car_jack"):
-				GameManager.show_dialogue("Hold E to place the car jack.")
-			else:
-				GameManager.show_dialogue("The door is jammed. I need a car jack from the trunk.")
-
+				
 		"dirt_exit":
 			if GameManager.has_item("shovel") and GameManager.jack_complete:
 				GameManager.show_dialogue("Select the shovel then left click to dig out.")
@@ -186,9 +204,15 @@ func _handle_interaction() -> void:
 				GameManager.show_dialogue("I need the shovel from the trunk.")
 
 		"honk":
-			GameManager.show_dialogue("*HONK* — No one can hear me this deep...")
+			if GameManager.honk_broken:
+				GameManager.show_dialogue("*click* — The horn is broken. The impact must have damaged it.")
+			elif GameManager.rescue_called:
+				GameManager.show_dialogue("*HONK* — Maybe they'll hear that!")
+				GameManager.use_hammer_for_noise()
+			else:
+				GameManager.show_dialogue("*HONK* — No one can hear me this deep underground...")
 			var audio = get_node_or_null("/root/Main/AudioManager")
-			if audio: audio.play_honk()
+			if audio and not GameManager.honk_broken: audio.play_honk()
 
 		"steering_wheel":
 			GameManager.show_dialogue("Completely jammed.")

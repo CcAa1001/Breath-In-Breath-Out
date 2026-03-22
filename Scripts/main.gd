@@ -6,6 +6,8 @@ var camera:       Camera2D = null
 var shake_amount: float    = 0.0
 var tape_preview: Node     = null
 
+var panic_shake_amount: float  = 0.0
+
 func _ready() -> void:
 	GameManager.game_over.connect(_on_game_over)
 	GameManager.game_won.connect(_on_game_won)
@@ -14,11 +16,16 @@ func _ready() -> void:
 	GameManager.panic_updated.connect(_on_panic)
 	GameManager.pov_switch_requested.connect(_switch_pov_with_fade)
 	GameManager.player_blacked_out.connect(_on_blackout)
+	GameManager.panic_shake.connect(_on_panic_shake)
+	
+	await get_tree().create_timer(1.0).timeout
+	var audio = get_node_or_null("AudioManager")
+	if audio: audio._on_cue_changed(1)
 
-	darkness     = find_child("DarknessOverlay",       true, false)
-	pov_manager  = find_child("POVManager",            true, false)
-	camera       = find_child("GameCamera",            true, false)
-	tape_preview = find_child("TapePlacementPreview",  true, false)
+	darkness     = find_child("DarknessOverlay",      true, false)
+	pov_manager  = find_child("POVManager",           true, false)
+	camera       = find_child("GameCamera",           true, false)
+	tape_preview = find_child("TapePlacementPreview", true, false)
 
 	if darkness:     print("DarknessOverlay OK")
 	else:            print("ERROR: DarknessOverlay missing")
@@ -29,14 +36,33 @@ func _ready() -> void:
 	if tape_preview: print("TapePlacementPreview OK")
 	else:            print("WARNING: TapePlacementPreview missing")
 
+func _on_panic_shake(amount: float) -> void:
+	panic_shake_amount = amount
+
 func _process(delta: float) -> void:
 	if GameManager.is_dead: return
 
+	# panic shake — adds subtle random offset to camera
+	if panic_shake_amount > 0.0 and camera:
+		camera.offset += Vector2(
+			randf_range(-panic_shake_amount, panic_shake_amount),
+			randf_range(-panic_shake_amount, panic_shake_amount)) * delta * 10.0
+	elif shake_amount <= 0.0 and camera:
+		# only zero out if screen shake is also done
+		camera.offset = Vector2.ZERO
+
+	# ESC = back to main menu
+	if Input.is_action_just_pressed("ui_cancel"):
+		if GameManager.is_dead: return
+		GameManager.reset()
+		get_tree().change_scene_to_file("res://Scenes/start_screen.tscn")
+		
 	# SPACE = breathe
 	if Input.is_action_pressed("breathe"):
 		GameManager.hold_space(delta)
 	if Input.is_action_just_released("breathe"):
 		GameManager.release_space()
+
 
 	# E = car jack
 	if Input.is_action_pressed("use_jack"):
@@ -55,14 +81,14 @@ func _process(delta: float) -> void:
 		var panel = find_child("Panel", true, false)
 		if panel: panel.visible = !panel.visible
 
-	# screen shake
+	# screen shake from panic/events
 	if shake_amount > 0.0:
 		shake_amount = max(shake_amount - delta * 3.0, 0.0)
 		if camera:
 			camera.offset = Vector2(
 				randf_range(-shake_amount, shake_amount),
 				randf_range(-shake_amount, shake_amount))
-	elif camera:
+	elif panic_shake_amount <= 0.0 and camera:
 		camera.offset = Vector2.ZERO
 
 # -------------------------------------------------------
@@ -102,31 +128,35 @@ func _use_tape_at(world_pos: Vector2) -> void:
 		GameManager.show_dialogue("I don't have duct tape.")
 		return
 
-	# if preview already active — this click = PLACE the tape
 	if tape_preview and tape_preview.get("active") == true:
 		_place_tape_at_preview()
 		return
 
-	# first click — check we're over a cracked window zone
 	var crack_nodes = _get_crack_nodes()
+	var pov = str(pov_manager.get("current_pov")) if pov_manager else "front"
+
 	for crack_node in crack_nodes:
-		if not crack_node.visible: continue
+		var node_path = str(crack_node.get_path())
+		var in_front  = node_path.contains("FrontRow")
+		var in_back   = node_path.contains("BackRow")
+		if in_front and pov != "front": continue
+		if in_back  and pov != "back":  continue
+
 		var rect = _get_crack_rect(crack_node)
 		if rect.has_point(world_pos):
 			var wid   = crack_node.get("window_id")
 			var phase = GameManager.glass_phases.get(wid, 0)
 			if phase == 0:
-				GameManager.show_dialogue("This window is fine — save the tape.")
+				GameManager.show_dialogue("This window is fine.")
 				return
 			elif phase >= 4:
 				GameManager.show_dialogue("Too late — already shattered!")
 				return
-			# activate preview ghost
 			if tape_preview:
 				tape_preview.reset_transform()
 				tape_preview.activate()
 				GameManager.show_dialogue(
-					"Scroll = rotate  |  +/- = resize  |  Left click = place  |  Esc = cancel")
+					"Scroll = rotate  |  Left click = place  |  Esc = cancel")
 			return
 
 	GameManager.show_dialogue("Click on a cracked window area first.")
@@ -138,8 +168,6 @@ func _place_tape_at_preview() -> void:
 	for crack_node in crack_nodes:
 		if not crack_node.visible: continue
 		var rect = _get_crack_rect(crack_node)
-
-		# use tape_preview.global_position — this is world space
 		if rect.has_point(tape_preview.global_position):
 			var wid   = crack_node.get("window_id")
 			var phase = GameManager.glass_phases.get(wid, 0)
@@ -151,13 +179,10 @@ func _place_tape_at_preview() -> void:
 				GameManager.show_dialogue("Too late — already shattered!")
 				tape_preview.deactivate()
 				return
-
-			# pass global_position — crack_node.stamp_tape converts to local
 			crack_node.stamp_tape(
 				tape_preview.global_position,
 				tape_preview.rotation,
 				tape_preview.scale)
-
 			GameManager.apply_tape_to_window(wid)
 			tape_preview.deactivate()
 			return
@@ -166,18 +191,16 @@ func _place_tape_at_preview() -> void:
 
 func _get_crack_nodes() -> Array:
 	var nodes: Array = []
-	for id in ["front", "left", "right"]:
-		var n = get_node_or_null("POVManager/FrontRow/WindowCrack_" + id)
+	var all_paths = [
+		"POVManager/FrontRow/WindowCrack_front",
+		"POVManager/FrontRow/WindowCrack_left",
+		"POVManager/FrontRow/WindowCrack_right",
+		"POVManager/BackRow/WindowCrack_rear",
+	]
+	for path in all_paths:
+		var n = get_node_or_null(path)
 		if n and n.get("spawn_width") != null:
 			nodes.append(n)
-	var rear = get_node_or_null("POVManager/BackRow/WindowCrack_rear")
-	if rear and rear.get("spawn_width") != null:
-		nodes.append(rear)
-	# group fallback
-	if nodes.is_empty():
-		for n in get_tree().get_nodes_in_group("window_crack"):
-			if n.get("spawn_width") != null:
-				nodes.append(n)
 	return nodes
 
 func _get_crack_rect(crack_node: Node) -> Rect2:
@@ -188,7 +211,7 @@ func _get_crack_rect(crack_node: Node) -> Rect2:
 		Vector2(hw * 2.0, hh * 2.0))
 
 # -------------------------------------------------------
-# OTHER ITEM FUNCTIONS
+# ITEM FUNCTIONS
 # -------------------------------------------------------
 func _use_cutter() -> void:
 	if GameManager.seatbelt_cut:
@@ -201,6 +224,19 @@ func _use_cutter() -> void:
 	GameManager.cut_seatbelt()
 	var audio = get_node_or_null("AudioManager")
 	if audio: audio.play("seatbelt")
+	_swap_front_seat_image()
+
+func _swap_front_seat_image() -> void:
+	var car_image = get_node_or_null("POVManager/FrontRow/CarImage")
+	if not car_image:
+		print("ERROR: FrontRow/CarImage not found!")
+		return
+	var tex = load("res://assets/front_seat_cut.png")
+	if not tex:
+		print("ERROR: front_seat_cut.png not found!")
+		return
+	car_image.texture = tex
+	print("Front seat image swapped!")
 
 func _use_screwdriver() -> void:
 	var pov = str(pov_manager.get("current_pov")) if pov_manager else ""
@@ -232,14 +268,18 @@ func _use_hammer() -> void:
 
 func _use_shovel() -> void:
 	var pov = str(pov_manager.get("current_pov")) if pov_manager else ""
-	if GameManager.jack_complete and pov == "trunk":
-		GameManager.show_choice("Dig out?", [
-			"Start digging!",
-			"Wait for rescue instead"])
-	elif not GameManager.jack_complete:
-		GameManager.show_dialogue("Force the door open first.")
-	else:
+	if not GameManager.jack_complete:
+		GameManager.show_dialogue("Force the door open first with the car jack.")
+		return
+	if pov != "trunk":
 		GameManager.show_dialogue("Go to the trunk to dig out.")
+		return
+	if not GameManager.cue_2_started:
+		GameManager.show_choice("The door is open. Dig out now?",
+			["Start digging!", "Wait and see"])
+	else:
+		GameManager.show_choice("Rescue is coming. What do you do?",
+			["Start digging!", "Wait for rescue instead"])
 
 func _use_emergency_number() -> void:
 	if not GameManager.has_emergency_number:
@@ -321,26 +361,66 @@ func _on_blackout(is_out: bool) -> void:
 		GameManager.show_dialogue("I can't breathe... hold SPACE NOW!")
 
 func _on_panic(value: float) -> void:
-	if value > 80.0:
-		trigger_shake(randf_range(0.0, 5.0))
+	if value > 50.0:
+		trigger_shake(randf_range(0.0, (value - 50.0) / 10.0))
 
 func _on_game_over(reason: String) -> void:
+	# force close phone if open
+	var phone_ui = find_child("PhoneScreen", true, false)
+	if phone_ui and phone_ui.visible:
+		phone_ui.hide()
+		# also kill click blocker
+		var blocker = phone_ui.get("click_blocker")
+		if blocker: blocker.visible = false
+
 	var screen = get_node_or_null("UI/GameOverScreen")
 	var label  = get_node_or_null("UI/GameOverScreen/ReasonLabel")
+	var bg     = get_node_or_null("UI/GameOverScreen/EndingBG")
 	if screen: screen.show()
-	if label:  label.text = reason + "\n\nClick to restart"
+	match reason:
+		"suffocated":
+			if bg and ResourceLoader.exists("res://assets/ending_suffocated.png"):
+				bg.texture = load("res://assets/ending_suffocated.png")
+				bg.visible = true
+			if label: label.visible = false
+		"buried":
+			if bg and ResourceLoader.exists("res://assets/ending_buried.png"):
+				bg.texture = load("res://assets/ending_buried.png")
+				bg.visible = true
+			if label: label.visible = false
+		_:
+			if bg: bg.visible = false
+			if label:
+				label.visible = true
+				label.text = reason + "\n\nClick to try again"
 
 func _on_game_won(ending: String) -> void:
+	# force close phone if open
+	var phone_ui = find_child("PhoneScreen", true, false)
+	if phone_ui and phone_ui.visible:
+		phone_ui.hide()
+		var blocker = phone_ui.get("click_blocker")
+		if blocker: blocker.visible = false
+
 	var screen = get_node_or_null("UI/GameOverScreen")
 	var label  = get_node_or_null("UI/GameOverScreen/ReasonLabel")
+	var bg     = get_node_or_null("UI/GameOverScreen/EndingBG")
 	if screen: screen.show()
-	if label:
-		match ending:
-			"rescue":
-				label.text = "You survived until rescue!\n\nThe team broke through. You made it out.\n\nClick to play again"
-			"dig":
-				label.text = "You dug your way out!\n\nFresh air. You're free.\n\nClick to play again"
-			_:
+	match ending:
+		"dig":
+			if bg and ResourceLoader.exists("res://assets/ending_dig.png"):
+				bg.texture = load("res://assets/ending_dig.png")
+				bg.visible = true
+			if label: label.visible = false
+		"rescue":
+			if bg: bg.visible = false
+			if label:
+				label.visible = true
+				label.text = "You survived until rescue!\n\nThe team broke through.\n\nClick to play again"
+		_:
+			if bg: bg.visible = false
+			if label:
+				label.visible = true
 				label.text = "You escaped!\n\nClick to play again"
 
 func _on_item_picked(_item: String) -> void:

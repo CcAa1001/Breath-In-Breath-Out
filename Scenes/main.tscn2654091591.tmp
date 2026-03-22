@@ -4,7 +4,8 @@
 [ext_resource type="Script" uid="uid://dhvt62dbtqlq5" path="res://Scripts/atmosphere.gd" id="2_d1ilt"]
 [ext_resource type="Script" uid="uid://hbwhbjqtbuiq" path="res://Scripts/soil_overlay.gd" id="2_ynf5e"]
 [ext_resource type="Texture2D" uid="uid://c3ndtq5k50k7r" path="res://assets/frontseat.png" id="3_ee4r6"]
-[ext_resource type="Script" uid="uid://j83ebmt6d7uk" path="res://Scripts/car_image.gd" id="4_kqrg6"]
+[ext_resource type="Script" uid="uid://bqlsoxhxig1yv" path="res://Scripts/game_over.gd" id="4_d1ilt"]
+[ext_resource type="Script" uid="uid://j83ebmt6d7uk" path="res://Scenes/car_image.gd" id="4_kqrg6"]
 [ext_resource type="Script" uid="uid://by2u3a0rxydt4" path="res://Scripts/pov_manager.gd" id="5_6iyac"]
 [ext_resource type="Texture2D" uid="uid://cg07xv24k44e2" path="res://assets/phone.png" id="5_ynf5e"]
 [ext_resource type="Texture2D" uid="uid://iks8ntowetk3" path="res://assets/cutter.png" id="6_gt3je"]
@@ -34,37 +35,34 @@
 [ext_resource type="Texture2D" uid="uid://cw55ov2g0ye1p" path="res://assets/blackout.png" id="25_jwpg7"]
 [ext_resource type="Script" uid="uid://dcsh0uwbitmw1" path="res://Scripts/audio_manager.gd" id="25_u50mg"]
 [ext_resource type="Script" uid="uid://b3nlc00jpwfiw" path="res://Scripts/glass_overlay.gd" id="26_cbgmd"]
-[ext_resource type="Script" uid="uid://c0l6bd2d3ycns" path="res://Scripts/dial_screen.gd" id="29_8cuat"]
-[ext_resource type="Texture2D" uid="uid://b4ieh2fqnhw7e" path="res://assets/phone_messages.png" id="30_kqrg6"]
-[ext_resource type="Texture2D" uid="uid://hk5umkpg080l" path="res://assets/phone_news.png" id="30_nwwfm"]
+[ext_resource type="Texture2D" uid="uid://df5036twchc0q" path="res://assets/PhoneBg.png" id="26_hpc6h"]
+[ext_resource type="Script" uid="uid://c0l6bd2d3ycns" path="res://Scenes/dial_screen.gd" id="29_8cuat"]
 [ext_resource type="Texture2D" uid="uid://b830e7fd4mxrd" path="res://assets/phone_ui.png" id="30_o1aky"]
+[ext_resource type="Script" uid="uid://cpado7kjuyloa" path="res://Scripts/emergency_call.gd" id="31_e08e2"]
 [ext_resource type="Texture2D" uid="uid://e4jmx4b43mla" path="res://assets/bar_bg.png" id="32_r33sp"]
 [ext_resource type="Texture2D" uid="uid://ms468wobw7bh" path="res://assets/bar_fill.png" id="33_hdf80"]
-[ext_resource type="Texture2D" uid="uid://doj2kxyb85p13" path="res://assets/phone_msg_jake.png" id="33_nwwfm"]
 [ext_resource type="Texture2D" uid="uid://cccrryk5nc7s4" path="res://assets/car_bar_fill.png" id="34_hdf80"]
-[ext_resource type="Texture2D" uid="uid://e2hg4wjhpuv7" path="res://assets/phone_msg_mom.pg.png" id="34_s8vy0"]
 [ext_resource type="Script" uid="uid://bjvvusuox5wlm" path="res://Scripts/tape_mode.gd" id="41_8cuat"]
-[ext_resource type="Script" uid="uid://bqlsoxhxig1yv" path="res://Scripts/game_over.gd" id="42_s8vy0"]
 [ext_resource type="Texture2D" uid="uid://dsb16jmlw7qqa" path="res://assets/crack_tape.png" id="43_aa8k8"]
-[ext_resource type="Script" uid="uid://b07sk0d3json3" path="res://Scripts/tape_placement.gd" id="44_kqrg6"]
+[ext_resource type="Script" uid="uid://b07sk0d3json3" path="res://Scenes/tape_placement.gd" id="44_kqrg6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ynf5e"]
 size = Vector2(83.18201, 135)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3pmx8"]
-size = Vector2(43.39164, 186.2602)
+size = Vector2(43.907303, 186.2602)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hdf80"]
 size = Vector2(889.6275, 84.145676)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_272bh"]
-size = Vector2(388, 131)
+size = Vector2(356, 116)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_kek77"]
-size = Vector2(336.5, 385.5)
+size = Vector2(285, 733)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u50mg"]
-size = Vector2(82.790924, 158.80588)
+size = Vector2(46.447388, 127.0282)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_gt3je"]
 radius = 120.33703
@@ -73,19 +71,19 @@ radius = 120.33703
 radius = 43.011627
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5vw27"]
-size = Vector2(170, 247)
+size = Vector2(170, 264)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4c57u"]
-size = Vector2(103.5, 166)
+size = Vector2(97, 154)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_efxa6"]
-size = Vector2(251, 62)
+size = Vector2(224, 60)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6vcvc"]
-size = Vector2(212, 221.5)
+size = Vector2(184, 203)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_536cc"]
-size = Vector2(199.5, 222)
+size = Vector2(173, 204)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7k868"]
 size = Vector2(185.45882, 391.51526)
@@ -100,7 +98,7 @@ size = Vector2(171.33124, 124.7382)
 size = Vector2(122.5, 197.05087)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_kltya"]
-size = Vector2(256, 200.5)
+size = Vector2(198.09375, 200.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_e08e2"]
 size = Vector2(256.75, 87.25)
@@ -153,9 +151,9 @@ scale = Vector2(0.99999994, 0.99999994)
 shape = SubResource("RectangleShape2D_ynf5e")
 
 [node name="Sprite2D" type="Sprite2D" parent="POVManager/FrontRow/Phone" unique_id=320399379]
-position = Vector2(1302, 918.00006)
-rotation = 0.13439035
-scale = Vector2(0.09176331, 0.09026688)
+position = Vector2(1297.751, 894.32153)
+rotation = -0.064577185
+scale = Vector2(0.1267099, 0.12433741)
 texture = ExtResource("5_ynf5e")
 
 [node name="Cutter" type="Area2D" parent="POVManager/FrontRow" unique_id=152463304]
@@ -165,12 +163,12 @@ description = "Can be use to cut the seatbealh which is jammed"
 dialogue = "Cutter! Maybe I can free myself."
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/Cutter" unique_id=678492121]
-position = Vector2(313, 984.9999)
+position = Vector2(338.27054, 981.99445)
 rotation = 0.50963616
 shape = SubResource("RectangleShape2D_3pmx8")
 
 [node name="Sprite2D" type="Sprite2D" parent="POVManager/FrontRow/Cutter" unique_id=2119536672]
-position = Vector2(308.99997, 977.99994)
+position = Vector2(332, 978)
 rotation = 1.0210177
 scale = Vector2(0.09873252, 0.09873252)
 texture = ExtResource("6_gt3je")
@@ -194,7 +192,7 @@ dialogue = "It's locked. I need a tool."
 collectible = false
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/GloveBox" unique_id=848183566]
-position = Vector2(1324, 638.5)
+position = Vector2(1333, 631)
 shape = SubResource("RectangleShape2D_272bh")
 
 [node name="LeftDoor" type="Area2D" parent="POVManager/FrontRow" unique_id=454895465]
@@ -205,13 +203,13 @@ dialogue = "It won't move. The soil is pressing against it."
 collectible = false
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/LeftDoor" unique_id=1804453308]
-position = Vector2(566.75, 887.75)
+position = Vector2(144.5, 708.5)
 shape = SubResource("RectangleShape2D_kek77")
 
 [node name="CarJackSlot" type="Sprite2D" parent="POVManager/FrontRow/LeftDoor" unique_id=1552681257]
-position = Vector2(585.00006, 860.00006)
-rotation = -1.1414453
-scale = Vector2(0.38098878, 0.38098878)
+position = Vector2(129.00015, 849.00006)
+rotation = -0.017453292
+scale = Vector2(0.20734596, 0.20734596)
 texture = ExtResource("15_e08e2")
 script = ExtResource("8_kltya")
 
@@ -231,7 +229,7 @@ dialogue = "It won't move. The soil is pressing against it."
 collectible = false
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/RightDoor" unique_id=1278351323]
-position = Vector2(1610.9902, 769.73376)
+position = Vector2(1602.5442, 777.0345)
 rotation = -0.62831855
 shape = SubResource("RectangleShape2D_u50mg")
 
@@ -267,7 +265,7 @@ choice_prompt = "The center console. What do you check?"
 choice_options = Array[String](["Check the radio", "Search for anything useful", "Never mind"])
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/CenterConsole" unique_id=923499495]
-position = Vector2(978, 691.5)
+position = Vector2(978, 700)
 shape = SubResource("RectangleShape2D_5vw27")
 
 [node name="BackSeatAccess" type="Area2D" parent="POVManager/FrontRow" unique_id=388748199]
@@ -278,12 +276,12 @@ collectible = false
 pov_target = "back"
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/BackSeatAccess" unique_id=1841225075]
-position = Vector2(984.25, 927)
+position = Vector2(981, 921)
 shape = SubResource("RectangleShape2D_4c57u")
 
 [node name="Sprite2D" type="Sprite2D" parent="POVManager/FrontRow/BackSeatAccess" unique_id=2136217407]
-position = Vector2(985.28125, 925.28125)
-scale = Vector2(0.083709724, 0.08468625)
+position = Vector2(979, 918.00006)
+scale = Vector2(0.0775757, 0.0775757)
 texture = ExtResource("8_gt3je")
 
 [node name="RearviewMirror" type="Area2D" parent="POVManager/FrontRow" unique_id=1274272076]
@@ -293,7 +291,7 @@ dialogue = "Just darkness outside. We're buried deep."
 collectible = false
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/FrontRow/RearviewMirror" unique_id=109430242]
-position = Vector2(991.5, 331)
+position = Vector2(992, 332)
 shape = SubResource("RectangleShape2D_efxa6")
 
 [node name="WindowCrack_front" type="Node2D" parent="POVManager/FrontRow" unique_id=2113713873]
@@ -334,12 +332,12 @@ description = "duct_tape"
 dialogue = "Duct tape! I can seal the cracked windows with this."
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/GloveBoxView/DuctTape" unique_id=2109651441]
-position = Vector2(720, 667.75)
+position = Vector2(734, 677)
 shape = SubResource("RectangleShape2D_6vcvc")
 
 [node name="Sprite2D" type="Sprite2D" parent="POVManager/GloveBoxView/DuctTape" unique_id=1401189080]
-position = Vector2(732.00006, 706.00006)
-scale = Vector2(0.4398193, 0.4095459)
+position = Vector2(741, 707)
+scale = Vector2(0.3601074, 0.3601074)
 texture = ExtResource("9_7k868")
 
 [node name="EmergencyNumber" type="Area2D" parent="POVManager/GloveBoxView" unique_id=1734677611]
@@ -350,11 +348,11 @@ dialogue = "Ah, 112 I just remember i can call the cops with this number."
 collectible = false
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/GloveBoxView/EmergencyNumber" unique_id=211908491]
-position = Vector2(1116.25, 528)
+position = Vector2(1040.5, 556)
 shape = SubResource("RectangleShape2D_536cc")
 
 [node name="Sprite2D" type="Sprite2D" parent="POVManager/GloveBoxView/EmergencyNumber" unique_id=74767443]
-position = Vector2(1114, 536)
+position = Vector2(1044.6406, 562.3594)
 scale = Vector2(0.16050722, 0.16050722)
 texture = ExtResource("12_aqgau")
 
@@ -410,13 +408,13 @@ choice_prompt = "I found a hammer. What do I do with it?"
 choice_options = Array[String](["Bang on the car for rescue", "Keep it for now"])
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/BackRow/Hammer" unique_id=654214922]
-position = Vector2(761.00006, 705)
+position = Vector2(714.5, 729.49994)
 rotation = -2.9146998
 shape = SubResource("RectangleShape2D_8cuat")
 
 [node name="Sprite2D" type="Sprite2D" parent="POVManager/BackRow/Hammer" unique_id=164395663]
 position = Vector2(729.42554, 684.7846)
-rotation = 1.4032447
+rotation = 2.4870942
 scale = Vector2(0.21469264, 0.22372866)
 texture = ExtResource("13_kltya")
 
@@ -428,15 +426,15 @@ collectible = false
 pov_target = "front"
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/BackRow/FrontBtn" unique_id=177773040]
-position = Vector2(460, 853.99994)
+position = Vector2(286.00003, 962.00006)
 rotation = 1.0210177
 shape = SubResource("RectangleShape2D_ueoa1")
 
 [node name="Sprite2D" type="Sprite2D" parent="POVManager/BackRow/FrontBtn" unique_id=127448378]
-position = Vector2(454.00003, 843)
+position = Vector2(286.99997, 965)
 rotation = 1.0576695
 scale = Vector2(0.08698556, 0.10059499)
-texture = ExtResource("9_3pmx8")
+texture = ExtResource("8_gt3je")
 
 [node name="TrunkBtn" type="Area2D" parent="POVManager/BackRow" unique_id=799963964]
 script = ExtResource("8_wsu2k")
@@ -446,13 +444,13 @@ collectible = false
 pov_target = "trunk"
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/BackRow/TrunkBtn" unique_id=1795719253]
-position = Vector2(1342, 256.00006)
+position = Vector2(1333, 210)
 rotation = 0.7661995
 shape = SubResource("RectangleShape2D_ueoa1")
 
 [node name="Sprite2D" type="Sprite2D" parent="POVManager/BackRow/TrunkBtn" unique_id=617132043]
-position = Vector2(1340, 252.00003)
-rotation = -2.5795965
+position = Vector2(1331.0001, 204.00008)
+rotation = -2.3143065
 scale = Vector2(0.09523194, 0.09523194)
 texture = ExtResource("9_3pmx8")
 flip_h = true
@@ -477,12 +475,12 @@ item_name = "car_jack"
 dialogue = "A car jack! Hold E near the door to use it."
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/TrunkView/CarJack" unique_id=1496800419]
-position = Vector2(787, 678.25)
+position = Vector2(797.9531, 678.25)
 shape = SubResource("RectangleShape2D_kltya")
 
 [node name="Sprite2D" type="Sprite2D" parent="POVManager/TrunkView/CarJack" unique_id=47106453]
-position = Vector2(791, 690.00006)
-scale = Vector2(0.2133731, 0.21152517)
+position = Vector2(798, 677)
+scale = Vector2(0.13181275, 0.13067119)
 texture = ExtResource("15_e08e2")
 
 [node name="Shovel" type="Area2D" parent="POVManager/TrunkView" unique_id=1949452399]
@@ -507,11 +505,11 @@ collectible = false
 pov_target = "back"
 
 [node name="Shape" type="CollisionShape2D" parent="POVManager/TrunkView/BackBtn" unique_id=614227579]
-position = Vector2(976, 935)
+position = Vector2(281.25, 951.25)
 shape = SubResource("RectangleShape2D_hpc6h")
 
 [node name="Sprite2D" type="Sprite2D" parent="POVManager/TrunkView/BackBtn" unique_id=1905645151]
-position = Vector2(970, 933)
+position = Vector2(275.87497, 959.125)
 scale = Vector2(0.0977783, 0.0977783)
 texture = ExtResource("8_gt3je")
 
@@ -557,24 +555,24 @@ stretch_mode = 5
 script = ExtResource("12_k12tt")
 metadata/_edit_use_anchors_ = true
 
+[node name="BreathHoldBar" type="ProgressBar" parent="UI" unique_id=118127521]
+offset_right = 4.0
+offset_bottom = 27.0
+metadata/_edit_use_anchors_ = true
+
 [node name="BreathPrompt" type="Label" parent="UI" unique_id=863115159]
-anchors_preset = -1
-anchor_left = -0.13541667
-anchor_top = -0.073148146
-anchor_right = -0.13541667
-anchor_bottom = -0.073148146
-offset_left = 740.0
-offset_top = 17.0
-offset_right = 1465.0
-offset_bottom = 160.0
-theme_override_font_sizes/font_size = 46
+offset_left = 618.0
+offset_top = 934.0
+offset_right = 1343.0
+offset_bottom = 1077.0
+theme_override_font_sizes/font_size = 70
 text = "[ SPACE — BREATHE ]"
 metadata/_edit_use_anchors_ = true
 
 [node name="DialogueLabel" type="Label" parent="UI" unique_id=27201987]
-offset_left = 96.0
+offset_left = 200.0
 offset_top = 900.0
-offset_right = 1798.0
+offset_right = 1720.0
 offset_bottom = 980.0
 theme_override_font_sizes/font_size = 36
 
@@ -594,7 +592,7 @@ color = Color(0, 0, 0, 1)
 metadata/_edit_use_anchors_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="UI/BlackoutOverlay" unique_id=792516161]
-position = Vector2(156.00002, 145)
+position = Vector2(160, 134)
 scale = Vector2(0.042968754, 0.041015632)
 texture = ExtResource("25_jwpg7")
 
@@ -607,12 +605,25 @@ script = ExtResource("13_jkdf5")
 
 [node name="PhoneBG" type="TextureRect" parent="UI/PhoneScreen" unique_id=78528434]
 layout_mode = 0
-offset_left = -370.0
-offset_top = -165.0
-offset_right = 878.0
-offset_bottom = 1065.0
-texture = ExtResource("5_ynf5e")
+offset_left = 41.0
+offset_right = 547.0
+offset_bottom = 900.0
+texture = ExtResource("26_hpc6h")
 expand_mode = 1
+
+[node name="BatteryBar" type="TextureRect" parent="UI/PhoneScreen" unique_id=737574187]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TimeLabel" type="Label" parent="UI/PhoneScreen" unique_id=117594547]
+layout_mode = 0
+offset_left = 230.0
+offset_top = 80.0
+offset_right = 270.0
+offset_bottom = 103.0
+theme_override_font_sizes/font_size = 28
+text = "04:13"
 
 [node name="HomeScreen" type="Control" parent="UI/PhoneScreen" unique_id=619209721]
 anchors_preset = 0
@@ -627,34 +638,34 @@ offset_bottom = 904.0
 
 [node name="AppGrid" type="GridContainer" parent="UI/PhoneScreen/HomeScreen" unique_id=587937195]
 layout_mode = 0
-offset_left = 97.0
-offset_top = 162.0
-offset_right = 477.0
-offset_bottom = 282.0
+offset_left = 69.0
+offset_top = 187.0
+offset_right = 509.0
+offset_bottom = 347.0
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 3
 
 [node name="NewsBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/AppGrid" unique_id=737676099]
-modulate = Color(1, 1, 1, 0)
-self_modulate = Color(1, 1, 1, 0)
-custom_minimum_size = Vector2(120, 120)
+custom_minimum_size = Vector2(140, 120)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
+text = "📰
+News"
 
 [node name="MessageBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/AppGrid" unique_id=701832416]
-modulate = Color(1, 1, 1, 0)
-self_modulate = Color(1, 1, 1, 0)
-custom_minimum_size = Vector2(120, 120)
+custom_minimum_size = Vector2(140, 120)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
+text = "💬
+Message"
 
 [node name="CallBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/AppGrid" unique_id=1375805010]
-modulate = Color(1, 1, 1, 0)
-self_modulate = Color(1, 1, 1, 0)
-custom_minimum_size = Vector2(120, 120)
+custom_minimum_size = Vector2(140, 120)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
+text = "📞
+Call"
 
 [node name="NewsScreen" type="Control" parent="UI/PhoneScreen/HomeScreen" unique_id=822508411]
 anchors_preset = 0
@@ -665,13 +676,11 @@ offset_bottom = 732.0
 mouse_filter = 1
 
 [node name="BackBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/NewsScreen" unique_id=22825916]
-modulate = Color(1, 1, 1, 0)
-self_modulate = Color(1, 1, 1, 0)
 layout_mode = 0
-offset_left = 317.0
-offset_top = 627.0
-offset_right = 389.0
-offset_bottom = 681.0
+offset_left = 14.0
+offset_top = 608.0
+offset_right = 72.0
+offset_bottom = 662.0
 
 [node name="ArticleList" type="VBoxContainer" parent="UI/PhoneScreen/HomeScreen/NewsScreen" unique_id=326829316]
 layout_mode = 0
@@ -679,15 +688,6 @@ offset_left = -2.0
 offset_top = 4.0
 offset_right = 466.0
 offset_bottom = 550.0
-
-[node name="NewsBg" type="TextureRect" parent="UI/PhoneScreen/HomeScreen/NewsScreen" unique_id=1034182207]
-layout_mode = 0
-offset_left = -417.0
-offset_top = -314.0
-offset_right = 1631.0
-offset_bottom = 1734.0
-scale = Vector2(0.6, 0.6)
-texture = ExtResource("30_nwwfm")
 
 [node name="MessageScreen" type="Control" parent="UI/PhoneScreen/HomeScreen" unique_id=320119688]
 anchors_preset = 0
@@ -698,40 +698,11 @@ offset_bottom = 718.0
 mouse_filter = 1
 
 [node name="BackBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/MessageScreen" unique_id=1569693907]
-modulate = Color(1, 1, 1, 0)
-self_modulate = Color(1, 1, 1, 0)
 layout_mode = 0
-offset_left = 313.0
-offset_top = 639.0
-offset_right = 391.0
-offset_bottom = 692.0
-
-[node name="MomBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/MessageScreen" unique_id=674046657]
-modulate = Color(1, 1, 1, 0)
-self_modulate = Color(1, 1, 1, 0)
-layout_mode = 0
-offset_left = 47.0
-offset_top = 14.0
-offset_right = 412.0
-offset_bottom = 97.0
-
-[node name="JakeBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/MessageScreen" unique_id=92803431]
-modulate = Color(1, 1, 1, 0)
-self_modulate = Color(1, 1, 1, 0)
-layout_mode = 0
-offset_left = 44.0
-offset_top = 148.0
-offset_right = 414.0
-offset_bottom = 236.0
-
-[node name="MessagesBG" type="TextureRect" parent="UI/PhoneScreen/HomeScreen/MessageScreen" unique_id=718779726]
-layout_mode = 0
-offset_left = -420.0
-offset_top = -302.0
-offset_right = 1628.0
-offset_bottom = 1746.0
-scale = Vector2(0.6, 0.6)
-texture = ExtResource("30_kqrg6")
+offset_left = 84.0
+offset_top = 602.0
+offset_right = 170.0
+offset_bottom = 680.0
 
 [node name="MessageList" type="VBoxContainer" parent="UI/PhoneScreen/HomeScreen/MessageScreen" unique_id=618802043]
 layout_mode = 0
@@ -765,12 +736,12 @@ offset_bottom = 148.0
 alignment = 1
 
 [node name="NumberGrid" type="GridContainer" parent="UI/PhoneScreen/HomeScreen/CallScreen" unique_id=1856220505]
-modulate = Color(1, 1, 1, 0)
+visible = false
 layout_mode = 0
 offset_left = 95.0
-offset_top = 132.0
-offset_right = 373.0
-offset_bottom = 504.0
+offset_top = 179.0
+offset_right = 446.0
+offset_bottom = 591.0
 columns = 3
 
 [node name="Btn1" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen/NumberGrid" unique_id=1720914205]
@@ -822,97 +793,100 @@ custom_minimum_size = Vector2(90, 90)
 layout_mode = 2
 
 [node name="CallBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen" unique_id=850511970]
-modulate = Color(1, 1, 1, 0)
-self_modulate = Color(1, 1, 1, 0)
 layout_mode = 0
-offset_left = 195.0
-offset_top = 528.0
-offset_right = 285.0
-offset_bottom = 618.0
+offset_left = 203.0
+offset_top = 573.0
+offset_right = 293.0
+offset_bottom = 663.0
 
 [node name="DeleteBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen" unique_id=925197056]
-modulate = Color(1, 1, 1, 0)
-self_modulate = Color(1, 1, 1, 0)
 layout_mode = 0
-offset_left = 310.0
-offset_top = 550.0
-offset_right = 366.0
-offset_bottom = 597.0
+offset_right = 8.0
+offset_bottom = 8.0
 
 [node name="StatusLabel" type="Label" parent="UI/PhoneScreen/HomeScreen/CallScreen" unique_id=1639526457]
 layout_mode = 0
-offset_left = 72.0
-offset_top = 27.0
-offset_right = 406.0
-offset_bottom = 114.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+offset_right = 40.0
+offset_bottom = 23.0
 
 [node name="BackBtn" type="Button" parent="UI/PhoneScreen/HomeScreen/CallScreen" unique_id=881701899]
-modulate = Color(1, 1, 1, 0)
-self_modulate = Color(1, 1, 1, 0)
 layout_mode = 0
-offset_left = 306.0
-offset_top = 631.0
-offset_right = 392.0
-offset_bottom = 688.0
-
-[node name="MsgJakeScreen" type="TextureRect" parent="UI/PhoneScreen/HomeScreen" unique_id=813149238]
-layout_mode = 0
-offset_left = -372.0
-offset_top = -174.0
-offset_right = 1676.0
-offset_bottom = 1874.0
-scale = Vector2(0.6, 0.6)
-texture = ExtResource("33_nwwfm")
-
-[node name="MsgMomScreen" type="TextureRect" parent="UI/PhoneScreen/HomeScreen" unique_id=2066309930]
-layout_mode = 0
-offset_left = -365.0
-offset_top = -164.0
-offset_right = 1683.0
-offset_bottom = 1884.0
-scale = Vector2(0.6, 0.6)
-texture = ExtResource("34_s8vy0")
+offset_right = 8.0
+offset_bottom = 8.0
 
 [node name="CloseBtn" type="Button" parent="UI/PhoneScreen" unique_id=425261284]
-modulate = Color(1, 1, 1, 0)
-self_modulate = Color(1, 1, 1, 0)
 layout_mode = 0
-offset_left = 262.0
-offset_top = 774.0
-offset_right = 336.0
-offset_bottom = 828.0
+offset_left = 425.0
+offset_top = 762.0
+offset_right = 499.0
+offset_bottom = 816.0
 theme_override_font_sizes/font_size = 33
+text = "<"
 
 [node name="HomeBtn" type="Button" parent="UI/PhoneScreen" unique_id=1954400402]
-modulate = Color(1, 1, 1, 0)
-self_modulate = Color(1, 1, 1, 0)
 layout_mode = 0
-offset_left = 376.0
-offset_top = 777.0
-offset_right = 450.0
-offset_bottom = 831.0
+offset_left = 271.0
+offset_top = 756.0
+offset_right = 345.0
+offset_bottom = 810.0
 theme_override_font_sizes/font_size = 33
+text = "⌂"
 
 [node name="ChoicePanel" type="Panel" parent="UI" unique_id=1781148109]
-offset_left = 740.0
-offset_top = 677.0
-offset_right = 1164.0
-offset_bottom = 814.0
+offset_left = 711.0
+offset_top = 273.0
+offset_right = 1199.0
+offset_bottom = 767.0
 
 [node name="ChoiceLabel" type="Label" parent="UI/ChoicePanel" unique_id=901536071]
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
 
+[node name="GameOverScreen" type="CanvasLayer" parent="UI" unique_id=2097113647]
+script = ExtResource("4_d1ilt")
+
+[node name="Overlay" type="ColorRect" parent="UI/GameOverScreen" unique_id=945187642]
+offset_left = 3.0
+offset_right = 1923.0
+offset_bottom = 1080.0
+tooltip_text = "Game Over"
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="ReasonLabel" type="Label" parent="UI/GameOverScreen" unique_id=743875563]
+offset_left = 524.0
+offset_top = 390.0
+offset_right = 887.0
+offset_bottom = 486.0
+theme_override_font_sizes/font_size = 62
+text = "Game Over"
+metadata/_edit_use_anchors_ = true
+
+[node name="PanicBar" type="ProgressBar" parent="UI" unique_id=475789337]
+offset_left = 21.0
+offset_top = 218.0
+offset_right = 336.0
+offset_bottom = 249.0
+show_percentage = false
+metadata/_edit_use_anchors_ = true
+
+[node name="PanicLabel" type="Label" parent="UI" unique_id=419536144]
+offset_left = 31.0
+offset_top = 220.0
+offset_right = 312.0
+offset_bottom = 253.0
+text = "Panic"
+metadata/_edit_use_anchors_ = true
+
 [node name="DebugPanel" type="CanvasLayer" parent="UI" unique_id=244713850]
 script = ExtResource("14_jkdf5")
 
 [node name="Panel" type="Panel" parent="UI/DebugPanel" unique_id=922005911]
-offset_left = 22.0
-offset_top = 31.0
-offset_right = 418.0
-offset_bottom = 535.0
+offset_left = 18.0
+offset_top = 43.0
+offset_right = 414.0
+offset_bottom = 547.0
 
 [node name="InventoryPanel" type="Control" parent="UI" unique_id=143623042]
 layout_mode = 3
@@ -1013,20 +987,65 @@ offset_bottom = 1051.0
 script = ExtResource("24_3pmx8")
 
 [node name="JackProgressBar" type="ProgressBar" parent="UI" unique_id=1732894052]
-offset_left = 44.0
-offset_top = 310.0
-offset_right = 290.0
-offset_bottom = 344.0
+offset_left = 23.0
+offset_top = 251.0
+offset_right = 337.0
+offset_bottom = 285.0
 max_value = 1.0
 
 [node name="BlackoutCountdown" type="Label" parent="UI" unique_id=2077808318]
-offset_left = 94.0
-offset_top = 165.0
-offset_right = 230.0
-offset_bottom = 216.0
+offset_left = 101.0
+offset_top = 169.0
+offset_right = 237.0
+offset_bottom = 220.0
 theme_override_colors/font_color = Color(0.7570462, 0, 0.118458636, 1)
 theme_override_font_sizes/font_size = 36
 horizontal_alignment = 1
+
+[node name="EmergencyCallScreen" type="Panel" parent="UI" unique_id=1235697186]
+offset_left = 711.0
+offset_top = 185.0
+offset_right = 1199.0
+offset_bottom = 793.0
+script = ExtResource("31_e08e2")
+
+[node name="CallStatus" type="Label" parent="UI/EmergencyCallScreen" unique_id=1960752676]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 3.0
+offset_right = 486.0
+offset_bottom = 71.0
+
+[node name="OperatorLabel" type="Label" parent="UI/EmergencyCallScreen" unique_id=662736784]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 84.0
+offset_right = 482.0
+offset_bottom = 168.0
+
+[node name="PlayerLabel" type="Label" parent="UI/EmergencyCallScreen" unique_id=882488334]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 211.0
+offset_right = 472.0
+offset_bottom = 271.0
+
+[node name="ChoiceContainer" type="VBoxContainer" parent="UI/EmergencyCallScreen" unique_id=759890111]
+layout_mode = 0
+offset_left = 23.0
+offset_top = 257.0
+offset_right = 477.0
+offset_bottom = 595.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/EmergencyCallScreen" unique_id=635266904]
+layout_mode = 0
+offset_left = -5.0
+offset_top = 450.0
+offset_right = 497.0
+offset_bottom = 600.0
+
+[node name="TranscriptBox" type="VBoxContainer" parent="UI/EmergencyCallScreen/ScrollContainer" unique_id=887144655]
+layout_mode = 2
 
 [node name="PlayerOxygenBar" type="TextureProgressBar" parent="UI" unique_id=2141966190]
 offset_left = 40.0
@@ -1051,56 +1070,6 @@ radial_initial_angle = 180.0
 texture_under = ExtResource("32_r33sp")
 texture_progress = ExtResource("34_hdf80")
 
-[node name="PanicBar" type="TextureProgressBar" parent="UI" unique_id=20383324]
-offset_left = 84.00001
-offset_top = 92.00001
-offset_right = 332.0
-offset_bottom = 266.0
-scale = Vector2(0.635, 0.635)
-value = 100.0
-fill_mode = 5
-radial_initial_angle = 180.0
-texture_under = ExtResource("32_r33sp")
-texture_progress = ExtResource("34_hdf80")
-tint_under = Color(1, 0, 0, 1)
-tint_progress = Color(1, 0.38431373, 1, 1)
-
-[node name="GameOverScreen" type="Control" parent="UI" unique_id=1719367762]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("42_s8vy0")
-
-[node name="EndingBG" type="TextureRect" parent="UI/GameOverScreen" unique_id=1352184548]
-layout_mode = 0
-offset_right = 1920.0
-offset_bottom = 1080.0
-mouse_filter = 2
-
-[node name="ReasonLabel" type="Label" parent="UI/GameOverScreen" unique_id=182038351]
-layout_mode = 0
-offset_left = 754.0
-offset_top = 489.0
-offset_right = 1176.0
-offset_bottom = 546.0
-
-[node name="RetryBtn" type="Button" parent="UI/GameOverScreen" unique_id=925876834]
-modulate = Color(1, 1, 1, 0)
-layout_mode = 0
-offset_left = 768.0
-offset_top = 565.0
-offset_right = 1163.0
-offset_bottom = 676.0
-
-[node name="MenuBtn" type="Button" parent="UI/GameOverScreen" unique_id=631854866]
-modulate = Color(1, 1, 1, 0)
-layout_mode = 0
-offset_left = 853.0
-offset_top = 766.0
-offset_right = 1086.0
-offset_bottom = 855.0
-
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="." unique_id=18871552]
 
 [node name="SFXPlayer" type="AudioStreamPlayer" parent="." unique_id=7830147]
@@ -1122,9 +1091,17 @@ script = ExtResource("26_cbgmd")
 [node name="TapeMode" type="Node" parent="." unique_id=189713179]
 script = ExtResource("41_8cuat")
 
+[node name="TapeModeHint" type="Label" parent="." unique_id=1128960241]
+offset_left = 760.0
+offset_top = 50.0
+offset_right = 1084.0
+offset_bottom = 73.0
+text = "🔧 TAPE MODE — click crack then press Q"
+
 [node name="TapePlacementPreview" type="Sprite2D" parent="." unique_id=2025748179]
+visible = false
 z_index = 20
-position = Vector2(2052, 939)
+position = Vector2(2105, 839)
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("43_aa8k8")
 script = ExtResource("44_kqrg6")
